@@ -1,19 +1,15 @@
-# Rust宏小册
+An Alternative Introduction to `std`.
 
-**注意**: 本项目尚在建设过程中。
+# Introduction
 
-本项目是The Little Book of Rust Macro的中文翻译。
+This is intended to be a comprehensive guide into Rust's standard library.
 
-查看渲染后的[正式版本](https://daseinphaos.github.io/tlborm-chinese/)([英文原版](https://danielkeep.github.io/tlborm/))。
+While `std` is indeed nicely documented, such documentation by its nature couldn't serve as an introduction to novices.
 
-本书试图提炼出Rust社区对Rust宏的知识集锦。因此，我们欢迎社区成员进行内容添补（通过pull）或提出需求（通过issue）。
+The goal of this set of posts is to provide an alternative to help novice Rust learners build up a structuralized understanding of the library step by step. It should cover genertal use cases, demonstrate part of the implementation, and hopefully help readers pick up some useful Rust tricks along the way.
 
-如果你希望做出贡献，请移步至[原版的repository](https://github.com/DanielKeep/tlborm/)。中文版的repo[在这里](https://github.com/DaseinPhaos/tlborm)。
+This is a working progress at its very early stages, as such, any kind of suggestions or help would be appreciated.
 
+# License
 
-
-## 目前需要
-
-* 一个更好的CSS主题。
-* 解析、展开相关的技术与模式。
-* 有用的轮子。
+This work is distributed under [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).

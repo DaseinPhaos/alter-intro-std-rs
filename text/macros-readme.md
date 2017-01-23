@@ -1,4 +1,4 @@
-% Standard Macros
+% Macros in std
 
 Lists all the macros defined in `std`.
 
