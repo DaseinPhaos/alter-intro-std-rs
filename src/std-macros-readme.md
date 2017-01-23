@@ -29,7 +29,7 @@ These are among the most widely used and well-known macros defined in `std` rust
 
 Some other macros(such as `assert!`) also utilize the formatting syntax, but as formatting is not their primary concern, they are not put under this category.
 
-[^format-rbe]: reference to the correpsonding chapter in [Rust by Example](http://rustbyexample.com/hello/print.html)
+[^format-rbe]:reference to the correpsonding chapter in [Rust by Example](http://rustbyexample.com/hello/print.html)
 
 > [`format!`](https://doc.rust-lang.org/std/macro.format.html)
 >
@@ -110,7 +110,7 @@ Assertions are runtime checks that once failed would `panic` the calling thread.
 >
 > Declares a new thread local storage key of type `std::thread::LocalKey`.
 >
-> The macro wraps any number of static delcarations and makes then thread local.
+> The macro wraps any number of static delcarations and makes them thread local.
 >
 > ```rust
 > use std::cell::RefCell;
