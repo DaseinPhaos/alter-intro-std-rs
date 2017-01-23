@@ -25,11 +25,11 @@ First comes the Mighty Panic.
 
 These macros are used to `format` a `String`; `write` the result to some buffer; specifically, `print` to the standard output.
 
-These are among the most widely used and well-known macros defined in `std` rust, thus should be covered here first. However, the actual formatting syntax they depend on is somewhat involved, and thus will be introduced in a separate post about [`std::fmt`](TODO).[^format-rbe]
+These are among the most widely used and well-known macros defined in `std` rust, thus should be covered here first. However, the actual formatting syntax they depend on is somewhat involved, and thus will be introduced in a separate post about [`std::fmt`](TODO).[^rbef]
+
+[^rbef]: reference to the correpsonding chapter in [Rust by Example](http://rustbyexample.com/hello/print.html)
 
 Some other macros(such as `assert!`) also utilize the formatting syntax, but as formatting is not their primary concern, they are not put under this category.
-
-[^format-rbe]:reference to the correpsonding chapter in [Rust by Example](http://rustbyexample.com/hello/print.html)
 
 > [`format!`](https://doc.rust-lang.org/std/macro.format.html)
 >
