@@ -1,4 +1,4 @@
-# Introduction
+% An Alternative Introduction to `std`
 
 This is intended to be a comprehensive guide towards Rust's standard library.
 
