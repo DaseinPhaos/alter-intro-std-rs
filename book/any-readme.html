@@ -172,9 +172,7 @@
 
 <p>Note the direct use of <code>impl</code> on trait objects. This is valid code, but The Book has failed to mention it(not in my memory).</p>
 
-<p>Also note that for convinience, these methods are also implemented for trait object <code>Any+Send</code> (with the implementation simply forwarding to <code>Any</code>).</p>
-
-<p>Additionally, <code>std::fmt::Debug</code> is implemented for <code>Any</code> as well as <code>Any+Send</code>.</p>
+<p>Also note that for convenience, these methods are also implemented for trait object <code>Any+Send</code> (with the implementation simply forwarding to <code>Any</code>).</p>
 
 <p>Another thing to notice is that <code>std::fmt::Debug</code> is implemented for <code>Any</code>, and of course for <code>Any+Send</code>.</p>
 
