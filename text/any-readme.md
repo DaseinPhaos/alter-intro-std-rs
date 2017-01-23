@@ -134,8 +134,6 @@ impl Any+Send {
 ```
  Note the direct use of `impl` on trait objects. This is valid code, but The Book has failed to mention it(not in my memory).
 
-Also note that for convinience, these methods are also implemented for trait object `Any+Send` (with the implementation simply forwarding to `Any`).
-
-Additionally, `std::fmt::Debug` is implemented for `Any` as well as `Any+Send`.
+Also note that for convenience, these methods are also implemented for trait object `Any+Send` (with the implementation simply forwarding to `Any`).
 
 Another thing to notice is that `std::fmt::Debug` is implemented for `Any`, and of course for `Any+Send`.
