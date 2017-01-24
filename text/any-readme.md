@@ -1,11 +1,10 @@
-% Module `any`
+% std::any
 
 > ref: https://doc.rust-lang.org/std/any/
 
 TODO:
 
 - [ ] Fix backward reference: any reference to `std` components not mentioned beforehead should be marked and explained.
-- [ ] Structualize modules.
 
 
 This module defines the `Any` trait and the `TypeId` struct. Together they form minimal support for runtime reflection.
