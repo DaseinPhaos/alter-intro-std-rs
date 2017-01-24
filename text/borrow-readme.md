@@ -226,6 +226,7 @@ The `std::convert::From` trait is also worth mentioning. The trait allows the fo
     let cow = Cow::from("Foo");
 #   println!("{}", cow);
 # }
+```
 
 The actual implementation is something like the following:
 
