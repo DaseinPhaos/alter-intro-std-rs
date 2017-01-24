@@ -5,3 +5,4 @@
     * [std::any](any-readme.md)
     * [std::ascii](ascii-readme.md)
     * [std::borrow](borrow-readme.md)
+    * [std::boxed](boxed-readme.md)
