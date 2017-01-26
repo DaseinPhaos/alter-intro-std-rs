@@ -6,3 +6,4 @@
     * [std::ascii](ascii-readme.md)
     * [std::borrow](borrow-readme.md)
     * [std::boxed](boxed-readme.md)
+    * [std::cell](cell-readme.md)

@@ -34,9 +34,13 @@ Then `from_raw` method constructs a box from raw pointer `raw`. After calling, t
 
 The `into_raw` method, on the other hand, consumes the calling `Box`, and returns a raw pointer pointing to the calling data. The caller should be responsible for that memory after invoking this funcion. Note that this is an associated function. As such, the calling syntax should be `Box::into_raw(b)` instead of `b.into_raw()`. This is so that there is no conflict with methods of the inner type.
 
-Additionally, for `Any + 'static` + (`Send`), the struct also implements `downcast`.
+Additionally, for `T: Any + 'static` (` + Send`), the struct `Box<T>` also implements `downcast`.
+
+As for the traits, basically if `T` implements any `Hash`, `Debug`, `Display`, `Default`, `PartialEq`, `Ord`, `Eq`, `PartialOrd`, `Iterator`, `FnOnce`, `Clone`, `Seek`, `BufRead`; then the corresponding `Box<T>` would also implement those traits, with trivial behaviors as we'd expect.
+
+Additionally, `Box<T>` implements `Borrow<T>`, `BorrowMut<T>`, `Deref<Target=T>`, `Pointer`, `Boxed`, `AsMut<T>`, `From<T>`.
 
 TODO:
 
-- [ ] introduce trait implementations.
+- [x] introduce trait implementations.
 - [ ] introduce unstable features in this module.

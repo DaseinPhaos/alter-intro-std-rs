@@ -93,31 +93,9 @@ def build():
     if os.path.exists(OUT_PATH):
         really_rmtree(OUT_PATH)
 
-    gen_redirs()
-
     copy_merge(src=RUSTBOOK_OUT_PATH, dst=BOOK_OUT_PATH)
     copy_merge(src=STATIC_PATH, dst=OUT_PATH)
     msg('.. done.')
-
-def gen_redirs():
-    msg_trace('.. generating redirects...')
-    base_path = BOOK_OUT_PATH
-    redirs = json.loads(open(REDIRECTS, 'rt').read())
-    for entry in redirs:
-        src = entry[0]
-        dst = entry[1]
-        rel = os.path.relpath(dst, os.path.dirname(src))
-        rel = rel.replace("\\", "/")
-        msg_trace('   .. %s -> %s / %s' % (src, dst, rel))
-
-        rel_base = os.path.dirname(rel) or '.'
-
-        page = REDIRECT_TEMPLATE % {'dest': rel+'.html', 'rel': rel_base}
-        redir = os.path.join(base_path, src+'.html')
-        redir_dir = os.path.dirname(redir)
-        if not os.path.exists(redir_dir): os.makedirs(redir_dir)
-        open(redir, 'wt').write(page)
-    msg_trace('   .. done.')
 
 def do_open():
     msg('Opening...')
