@@ -143,7 +143,7 @@ pub struct RefCell<T: ?Sized> {
 }
 ```
 
-As we can see inside `RefCell<T>`, in addition to the `value: UnsafeCell<T>` field where the actual value is stored, the `borrow: Cell<BorrowFlag>` field represents a flag indicating how the value is currently being dynamically borrowed. As such, logically speaking, the `borrow` flag shouldn't get involved in the (static) mutability consideration of `RefCell<T>` as a whole, so it is wrapped in a `Cell`.
+As we can see inside `RefCell<T>`, in addition to the `value: UnsafeCell<T>` field where the actual value is stored, the `borrow: Cell<BorrowFlag>` field represents a flag indicating how the value is currently being dynamically borrowed. As such, logically speaking, the `borrow` flag shouldn't get involved in the (static) mutability consideration of `RefCell<T>`, thus it is wrapped in a `Cell`.
 
 Now let's checkout `RefCell`'s methods:
 
@@ -171,9 +171,9 @@ impl<T: ?Sized> RefCell<T> {
 
 As usual, `new` constructs a new `RefCell`, `into_inner` returns the celled value.
 
-`try_borrow` will try to immutably borrow the wrapped value. If the value is currently mutably borrowed, it would return an `Err`. If not, the value of the `borrow` flag would increment by 1, indicating that another immutable borrow has been made, then a custom reference type `Ref<T>` would be returned( inside an `Ok` of course). It has a `panic`ing variant, `borrow`.
+`try_borrow` will try to immutably borrow the wrapped value. If the value is currently mutably borrowed, it would return an `Err`. If not, the value of the `borrow` flag would increment by 1, indicating that another immutable borrow has been made, then a custom reference type `Ref<T>` would be returned (inside an `Ok` of course). It has a `panic`ing variant, `borrow`.
 
-`try_borrow_mut` will try to mutably borrow the wrapped value. Note that it only requires a statically immutable `&self`, such "interior mutable" semantics is, after all, what we've been after. If the value is currently being borrowed(either mutably or not), it would return an `Err`. If not, then the value of the `borrow` flag would increment by `1`, thena custom reference type `RefMut<T>` would be returned. It also has a `panic`ing variant `borrow_mut`.[^borrow_state]
+`try_borrow_mut` will try to mutably borrow the wrapped value. Note that it only requires a statically immutable `&self`, such "interior mutable" semantics is, after all, what we've been after. If the value is currently being borrowed (either mutably or not), it would return an `Err`. If not, then the value of the `borrow` flag would be set to `WRITING`, then a custom reference type `RefMut<T>` would be returned. It also has a `panic`ing variant `borrow_mut`.[^borrow_state]
 
 [^borrow_state]: Actually `RefCell` has yet another method `borrow_state`. We didn't cover it in the text because it is unstable currently, and it won't be stable in any foreseeable future, as discussed in its related [issue](https://github.com/rust-lang/rust/issues/27733). The discussion itself, however, is worth mentioning, because it explained some general philosophy behind the interface designing of the standard library. Anyone interested should take a look.
 

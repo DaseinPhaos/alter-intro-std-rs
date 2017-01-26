@@ -2,7 +2,7 @@
 
 > https://doc.rust-lang.org/std/borrow/
 
-In Rust, borrowing generally comes in the flaver of reference: type `T` can be borrowed as `& T` or `&mut T`. However, the concept of borrowing can extend beyond the form of simple reference. Custom types may provide additional kind of borrowing. For example, `Vec<T>` introduces borrowed slices `&[T]` and `&mut [T]`.
+In Rust, borrowing generally comes in the flavor of reference: type `T` can be borrowed as `& T` or `&mut T`. However, the concept of borrowing can extend beyond the form of simple reference. Custom types may provide additional kind of borrowing. For example, `Vec<T>` introduces borrowed slices `&[T]` and `&mut [T]`.
 
 To capture the general concept of borrowing, this module defines two traits.
 
