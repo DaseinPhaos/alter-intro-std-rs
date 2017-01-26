@@ -41,6 +41,10 @@
 </li>
 <li><a class='active' href='borrow-readme.html'><b>3.3.</b> std::borrow</a>
 </li>
+<li><a  href='boxed-readme.html'><b>3.4.</b> std::boxed</a>
+</li>
+<li><a  href='cell-readme.html'><b>3.5.</b> std::cell</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -54,7 +58,7 @@
 <p><a href="https://doc.rust-lang.org/std/borrow/">https://doc.rust-lang.org/std/borrow/</a></p>
 </blockquote>
 
-<p>In Rust, borrowing generally comes in the flaver of reference: type <code>T</code> can be borrowed as <code>&amp; T</code> or <code>&amp;mut T</code>. However, the concept of borrowing can extend beyond the form of simple reference. Custom types may provide additional kind of borrowing. For example, <code>Vec&lt;T&gt;</code> introduces borrowed slices <code>&amp;[T]</code> and <code>&amp;mut [T]</code>.</p>
+<p>In Rust, borrowing generally comes in the flavor of reference: type <code>T</code> can be borrowed as <code>&amp; T</code> or <code>&amp;mut T</code>. However, the concept of borrowing can extend beyond the form of simple reference. Custom types may provide additional kind of borrowing. For example, <code>Vec&lt;T&gt;</code> introduces borrowed slices <code>&amp;[T]</code> and <code>&amp;mut [T]</code>.</p>
 
 <p>To capture the general concept of borrowing, this module defines two traits.</p>
 

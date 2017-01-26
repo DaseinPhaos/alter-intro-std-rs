@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>std::boxed</title>
+
+    <link rel="stylesheet" type="text/css" href="rustbook.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+                <div id="nav">
+                    <button id="toggle-nav">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </button>
+                </div>
+<div id='toc' class='mobile-hidden'>
+<ol class='chapter'>
+<li><a  href='README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a  href='macros-readme.html'><b>2.</b> Macros in std</a>
+</li>
+<li><a  href='mods-readme.html'><b>3.</b> Uncategorized Modules</a>
+<ol class='section'>
+<li><a  href='any-readme.html'><b>3.1.</b> std::any</a>
+</li>
+<li><a  href='ascii-readme.html'><b>3.2.</b> std::ascii</a>
+</li>
+<li><a  href='borrow-readme.html'><b>3.3.</b> std::borrow</a>
+</li>
+<li><a class='active' href='boxed-readme.html'><b>3.4.</b> std::boxed</a>
+</li>
+<li><a  href='cell-readme.html'><b>3.5.</b> std::cell</a>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">std::boxed</h1>
+    <blockquote>
+<p><a href="https://doc.rust-lang.org/std/boxed/">https://doc.rust-lang.org/std/boxed/</a></p>
+</blockquote>
+
+<p>This module introduces a pointer type for heap allocation, <code>Box&lt;T&gt;</code>. It owns the allocated <code>T</code> instance, and drop that content when itself goes out of scope.</p>
+
+<p>The definition is as follows:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span><span class='op'>&gt;</span>(<span class='ident'>Unique</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>);
+
+<span class='comment'>// ...</span>
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='comment'>// ...</span>
+    }
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span><span class='op'>&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_raw</span>(<span class='ident'>raw</span>: <span class='kw-2'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
+        <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>raw</span>)
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>into_raw</span>(<span class='ident'>b</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='kw-2'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
+        <span class='kw'>unsafe</span> { <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>b</span>) }
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20struct%20Box%3CT%3A%20%3FSized%3E(Unique%3CT%3E)%3B%0A%0A%2F%2F%20...%0A%0Aimpl%3CT%3E%20Box%3CT%3E%20%7B%0A%20%20%20%20pub%20fn%20new(x%3A%20T)%20-%3E%20Box%3CT%3E%20%7B%0A%20%20%20%20%20%20%20%20%2F%2F%20...%0A%20%20%20%20%7D%0A%7D%0A%0Aimpl%3CT%3A%20%3FSized%3E%20Box%3CT%3E%20%7B%0A%20%20%20%20pub%20unsafe%20fn%20from_raw(raw%3A%20*mut%20T)%20-%3E%20Self%20%7B%0A%20%20%20%20%20%20%20%20mem%3A%3Atransmute(raw)%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20into_raw(b%3A%20Box%3CT%3E)%20-%3E%20*mut%20T%20%7B%0A%20%20%20%20%20%20%20%20unsafe%20%7B%20mem%3A%3Atransmute(b)%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>The <code>new</code> method allocates memory on the heap and places the <code>x</code> into it, then return the boxed <code>Box&lt;T&gt;</code>.</p>
+
+<p>Then <code>from_raw</code> method constructs a box from raw pointer <code>raw</code>. After calling, the pointee is owned by the resulting <code>Box</code>. This is considered as using raw pointer, thus the method is marked as <code>unsafe</code>. The only valid pointer to pass to this function is the one take from anohter <code>Box</code> via <code>Box::into_raw</code> function.</p>
+
+<p>The <code>into_raw</code> method, on the other hand, consumes the calling <code>Box</code>, and returns a raw pointer pointing to the calling data. The caller should be responsible for that memory after invoking this funcion. Note that this is an associated function. As such, the calling syntax should be <code>Box::into_raw(b)</code> instead of <code>b.into_raw()</code>. This is so that there is no conflict with methods of the inner type.</p>
+
+<p>Additionally, for <code>T: Any + &#39;static</code> (<code>+ Send</code>), the struct <code>Box&lt;T&gt;</code> also implements <code>downcast</code>.</p>
+
+<p>As for the traits, basically if <code>T</code> implements any <code>Hash</code>, <code>Debug</code>, <code>Display</code>, <code>Default</code>, <code>PartialEq</code>, <code>Ord</code>, <code>Eq</code>, <code>PartialOrd</code>, <code>Iterator</code>, <code>FnOnce</code>, <code>Clone</code>, <code>Seek</code>, <code>BufRead</code>; then the corresponding <code>Box&lt;T&gt;</code> would also implement those traits, with trivial behaviors as we&#39;d expect.</p>
+
+<p>Additionally, <code>Box&lt;T&gt;</code> implements <code>Borrow&lt;T&gt;</code>, <code>BorrowMut&lt;T&gt;</code>, <code>Deref&lt;Target=T&gt;</code>, <code>Pointer</code>, <code>Boxed</code>, <code>AsMut&lt;T&gt;</code>, <code>From&lt;T&gt;</code>.</p>
+
+<p>TODO:</p>
+
+<ul>
+<li>[x] introduce trait implementations.</li>
+<li>[ ] introduce unstable features in this module.</li>
+</ul>
+
+    <script src='rustbook.js'></script>
+</div></div>
+
+
+</body>
+</html>
