@@ -6,7 +6,7 @@ While `std` is indeed nicely documented, such documentation by its nature couldn
 
 The goal of this set of posts is to provide an alternative to help novice Rust learners build up a structuralized understanding of the library step by step. It should cover genertal use cases, demonstrate part of the implementation, and hopefully help readers pick up some useful Rust tricks along the way.
 
-This is a working progress at its very early stages, as such, any kind of suggestions or help would be appreciated.
+This is a work in progress at its very early stages, as such, any kind of suggestions or help would be appreciated.
 
 # License
 

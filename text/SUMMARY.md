@@ -7,3 +7,6 @@
     * [std::borrow](borrow-readme.md)
     * [std::boxed](boxed-readme.md)
     * [std::cell](cell-readme.md)
+    * [std::clone](clone-readme.md)
+    * [std::cmp](cmp-readme.md)
+    * [std::default](default-readme.md)

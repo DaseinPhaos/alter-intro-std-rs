@@ -10,7 +10,7 @@ The goal of this set of posts is to provide an alternative to help novice Rust l
 
 The rendered version is available [here](https://daseinphaos.github.io/alter-intro-std-rs/).
 
-This is a working progress at its very early stages, as such, any kind of suggestions or help would be appreciated.
+This is a work in progress at its very early stages, as such, any kind of suggestions or help would be appreciated.
 
 # License
 
