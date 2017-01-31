@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>std::default</title>
+
+    <link rel="stylesheet" type="text/css" href="rustbook.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+                <div id="nav">
+                    <button id="toggle-nav">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </button>
+                </div>
+<div id='toc' class='mobile-hidden'>
+<ol class='chapter'>
+<li><a  href='README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a  href='macros-readme.html'><b>2.</b> Macros in std</a>
+</li>
+<li><a  href='mods-readme.html'><b>3.</b> Uncategorized Modules</a>
+<ol class='section'>
+<li><a  href='any-readme.html'><b>3.1.</b> std::any</a>
+</li>
+<li><a  href='ascii-readme.html'><b>3.2.</b> std::ascii</a>
+</li>
+<li><a  href='borrow-readme.html'><b>3.3.</b> std::borrow</a>
+</li>
+<li><a  href='boxed-readme.html'><b>3.4.</b> std::boxed</a>
+</li>
+<li><a  href='cell-readme.html'><b>3.5.</b> std::cell</a>
+</li>
+<li><a  href='clone-readme.html'><b>3.6.</b> std::clone</a>
+</li>
+<li><a  href='cmp-readme.html'><b>3.7.</b> std::cmp</a>
+</li>
+<li><a class='active' href='default-readme.html'><b>3.8.</b> std::default</a>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">std::default</h1>
+    <blockquote>
+<p><a href="https://doc.rust-lang.org/std/default/">https://doc.rust-lang.org/std/default/</a></p>
+</blockquote>
+
+<p>This module defines the <code>Default</code> trait:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Default</span>: <span class='ident'>Sized</span> {
+    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20Default%3A%20Sized%20%7B%0A%20%20%20%20fn%20default()%20-%3E%20Self%3B%0A%7D%0A%7D">Run</a></pre>
+
+<p>The trait is used to give the implementing type a default value to fallback to.</p>
+
+<p>Sometimes, like when initializing some <code>Vec&lt;T&gt;</code>, all we really care is that the vector being created, not the actual values the elements would get initialized to. Some other cases we want just want the type we defined, say it represents some configurations, to have a nice default value. Under these cases, we can make use of this trait:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
+<span class='kw'>struct</span> <span class='ident'>SomeConfigs</span> {
+    <span class='ident'>foo</span>: <span class='ident'>i32</span>,
+    <span class='ident'>bar</span>: <span class='ident'>f32</span>,
+}
+
+<span class='kw'>fn</span> <span class='ident'>main</span>() {
+    <span class='kw'>let</span> <span class='ident'>configs</span>: <span class='ident'>SomeConfigs</span> <span class='op'>=</span> <span class='ident'>Default</span>::<span class='ident'>default</span>();
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23%5Bderive(Default)%5D%0Astruct%20SomeConfigs%20%7B%0A%20%20%20%20foo%3A%20i32%2C%0A%20%20%20%20bar%3A%20f32%2C%0A%7D%0A%0Afn%20main()%20%7B%0A%20%20%20%20let%20configs%3A%20SomeConfigs%20%3D%20Default%3A%3Adefault()%3B%0A%7D%0A">Run</a></pre>
+
+<p>Note that this trait can be used with #[derive] if all of the type&#39;s fields implement Default. When derived, it will use the default value for each field&#39;s type.</p>
+
+    <script src='rustbook.js'></script>
+</div></div>
+
+
+</body>
+</html>
