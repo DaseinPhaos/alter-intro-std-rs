@@ -439,4 +439,6 @@ impl<T: ?Sized> RefCell<T> {
 
 Simple and clear.
 
-Like `UnsafeCell<T>`, `RefCell<T>` implements `From<T>` and `!Sync`. It also implements `Send`, `Clone`, `Default`, `Debug`, `Eq`, `Ord`, `PartialEq<RefCell<T>>`, `PartialOrd<RefCell<T>>` when `T` implements those traits, respectively.
+Like `UnsafeCell<T>`, `RefCell<T>` implements `From<T>` and `!Sync`. It also implements `Send`, `Clone`, `Default`, `Debug`, `Eq`, `Ord`, `PartialEq<RefCell<T>>`, `PartialOrd<RefCell<T>>` when `T` implements those traits, respectively.[^final-note]
+
+[^final-note]: As [RFC 1651](https://github.com/rust-lang/rfcs/pull/1651) points out, the API design of `Cell` can be altered to support non-`Copy` types, check it out for more details. The actual implementation is nowhere under its way into the standard library yet, thus we wouldn't cover it here.
