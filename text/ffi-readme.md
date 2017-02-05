@@ -245,6 +245,16 @@ impl OsString {
 }
 ```
 
+Optionally, construct it with a default capacity:
+
+```ignore
+impl OsString {
+    pub fn with_capacity(capacity: usize) -> OsString {
+        OsString { inner: Buf::with_capacity(capacity) }
+    }
+}
+```
+
 To borrow it as an `&OsStr`:
 
 ```ignore
@@ -264,3 +274,72 @@ impl OsString {
             .map_err(|buf|OsString { inner: buf} )
     }
 }
+```
+
+To extends and to clear:
+
+```ignore
+impl OsString {
+    pub fn push<T>(&mut self, s: T)
+        where T: AsRef<OsStr> {
+        self.inner.push_slice(&s.as_ref().inner)
+    }
+
+    pub fn clear(&mut self) {
+        self.inner.clear()
+    }
+}
+```
+
+To query, or to reserve for capacity:
+
+```ignore
+pub fn capacity(&self) -> usize {
+    self.inner.capacity()
+}
+
+// reserve at least `additional` more capacity
+pub fn reserve(&mut self, additional: usize) {
+    self.inner.reserve(additional)
+}
+
+// reserve the minimum capacity for exactly `additional` more capacity
+pub fn reserve_exact(&mut self, additional: usize) {
+    self.inner.reserve_exact(additional)
+}
+```
+
+It also implements `Clone`, `From<String>`, `From<&'a T> where T: AsRef<OsStr> + ?Sized`, `Index<RangeFull, Output=OsStr>`, `Deref<Target=OsStr>`, `Default`, `Debug`, `PartialEq`, `PartialEq<str>`, `Eq`, `PartialOrd`, `PartialOrd<str>`, `Ord`, `Hash`, `Borrow<OsStr>`, `AsRef<OsStr>`, `From<PathBuf>`, `AsRef<Path>` etc.
+
+`OsStr` has the following methods implemented:
+
+```ignore
+impl OsStr {
+    pub fn new<S>(s: &S) -> &OsStr
+        where S: AsRef<OsStr> + ?Sized {
+        s.as_ref()
+    }
+
+    pub fn to_str(&self) -> Option<&str> {
+        self.inner.to_str()
+    }
+
+    pub fn to_string_lossy(&self) -> Cow<str> {
+        // ...
+    }
+
+    pub fn to_os_string(&self) -> OsString {
+        OsString { inner: self.inner.to_owned() }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.inner.is_empty()
+    }
+
+    pub fn len(&self) -> usize {
+        self.inner.inner.len()
+    }
+}
+```
+
+It implements `Defualt`, `Hash`, `Debug`, `AsRef<OsStr>`, `AsRef<Path>`, and some comparison traits.
