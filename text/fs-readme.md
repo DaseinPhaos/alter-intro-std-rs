@@ -51,16 +51,16 @@ The returned `ReadDir` implements `Iterator<Item=Result<DirEntry>`, where a `Dir
 ```ignore
 impl DirEntry {
     // returns the full path to the entry
-    fn path(&self) -> PathBuf{ /*...*/ }
+    pub fn path(&self) -> PathBuf{ /*...*/ }
 
     // returns the metadata of the entry
-    fn metaData(&self) -> Result<Metadata>{ /*...*/ }
+    pub fn metaData(&self) -> Result<Metadata>{ /*...*/ }
 
     // returns the type of the entry
-    fn file_type(&self) -> Result<FileType>{ /*...*/ }
+    pub fn file_type(&self) -> Result<FileType>{ /*...*/ }
 
     // returns the file name of the entry without other leading path components
-    fn file_name(&self) -> OsString { /*...*/ }
+    pub fn file_name(&self) -> OsString { /*...*/ }
 }
 ```
 
@@ -150,28 +150,28 @@ Now let's take a look at `Metadata`. It implements:
 ```ignore
 impl Metadata {
     // returns the type of the represented entry
-    fn file_type(&self) -> FileType{ /*...*/ }
+    pub fn file_type(&self) -> FileType{ /*...*/ }
 
     // returns whether the represented entry is a directory
-    fn is_dir(&self) -> bool{ /*...*/ }
+    pub fn is_dir(&self) -> bool{ /*...*/ }
 
     // returns whether the represented entry is a file
-    fn is_file(&self) -> bool{ /*...*/ }
+    pub fn is_file(&self) -> bool{ /*...*/ }
 
     // returns the size of the represented entry in bytes
-    fn lent(&self) -> u64{ /*...*/ }
+    pub fn lent(&self) -> u64{ /*...*/ }
 
     // returns the permissions of the represented entry
-    fn permissions(&self) -> Permissions{ /*...*/ }
+    pub fn permissions(&self) -> Permissions{ /*...*/ }
 
     // returns the last modification time of the represented entry
-    fn modified(&self) -> Result<SystemTime>{ /*...*/ }
+    pub fn modified(&self) -> Result<SystemTime>{ /*...*/ }
 
     // returns the last access time
-    fn accessed(&self) -> Result<SystemTime>{ /*...*/ }
+    pub fn accessed(&self) -> Result<SystemTime>{ /*...*/ }
 
     // returns the creation time
-    fn created(&self) -> Result<SystemTime>{ /*...*/ }
+    pub fn created(&self) -> Result<SystemTime>{ /*...*/ }
 }
 ```
 
@@ -183,11 +183,11 @@ The structure represents types of a filesystem entry. It implements:
 
 ```ignore
 impl FileType {
-    fn is_dir(&self) -> bool{ /*...*/ }
+    pub fn is_dir(&self) -> bool{ /*...*/ }
 
-    fn is_file(&self) -> bool{ /*...*/ }
+    pub fn is_file(&self) -> bool{ /*...*/ }
 
-    fn is_symlink(&self) -> bool{ /*...*/ }
+    pub fn is_symlink(&self) -> bool{ /*...*/ }
 }
 ```
 
@@ -200,10 +200,10 @@ The structure represents various permissions on a filesystem entry. Currently, i
 ```ignore
 impl Permissions {
     // returns whether the permission describes a readonly entry.
-    fn readonly(&self) -> bool{ /*...*/ }
+    pub fn readonly(&self) -> bool{ /*...*/ }
 
     // set the readonly flag for the permission.
-    fn set_readonly(&mut selt, readonly: bool){ /*...*/ }
+    pub fn set_readonly(&mut selt, readonly: bool){ /*...*/ }
 }
 ```
 
@@ -225,7 +225,7 @@ Firstly, to create a new set of options:
 
 ```ignore
 impl OpenOptions {
-    fn new() -> OpenOptions{ /*...*/ }
+    pub fn new() -> OpenOptions{ /*...*/ }
 }
 ```
 
@@ -236,29 +236,29 @@ Next, to set various options:
 ```ignore
 impl OpenOptions {
     // Sets read access. When true, the file should be readable when opened.
-    fn read(&mut self, read: bool) -> &mut OpenOptions{ /*...*/ }
+    pub fn read(&mut self, read: bool) -> &mut OpenOptions{ /*...*/ }
 
     // Sets write access. When true, the file should be writable when opened.
-    fn write(&mut self, write: bool) -> &mut OpenOptions{ /*...*/ }
+    pub fn write(&mut self, write: bool) -> &mut OpenOptions{ /*...*/ }
 
     // Sets append acess. When true, writing will append to the file, rather
     // than overwrting from the file's start. When set, it also implicitly
     // sets the `write` flag.
-    fn append(&mut self, append: bool) -> &mut OpenOptions{ /*...*/ }
+    pub fn append(&mut self, append: bool) -> &mut OpenOptions{ /*...*/ }
 
     // Sets the truncating option. When true, the file would be truncated to
     // zero-length if it already exists. Write access should also be set for
     // the truncation to work.
-    fn truncate(&mut self, truncate: bool) -> &mut OpenOptions{ /*...*/ }
+    pub fn truncate(&mut self, truncate: bool) -> &mut OpenOptions{ /*...*/ }
 
     // Sets the creation option. When true, a new file will be created if the
     // file doesn't exist when opened. In order for this to work, `write`
     // access should be set.
-    fn create(&mut self, create: bool) -> &mut OpenOptions{ /*...*/ }
+    pub fn create(&mut self, create: bool) -> &mut OpenOptions{ /*...*/ }
 
     // Sets the creation option. When true, a new file will *always* be created
     // upon opening. In order for this to work, `write` access should be set.
-    fn create_new(&mut self, create_new: bool) -> &mut OpenOptions{ /*...*/ }
+    pub fn create_new(&mut self, create_new: bool) -> &mut OpenOptions{ /*...*/ }
 }
 ```
 
@@ -280,9 +280,9 @@ Sometimes it can be a bit verbose to always create a `OpenOption` for some simpl
 
 ```ignore
 impl File {
-    fn open<P>(path: P) -> Result<File> where P: AsRef<Path>{ /*...*/ }
+    pub fn open<P>(path: P) -> Result<File> where P: AsRef<Path>{ /*...*/ }
 
-    fn create<P>(path: P) -> Result<File> where P: AsRef<Path>{ /*...*/ }
+    pub fn create<P>(path: P) -> Result<File> where P: AsRef<Path>{ /*...*/ }
 ```
 
 `File::open(p)` would try to open a file as in `OpenOptions::new().read(true).open(p)`.
@@ -293,7 +293,7 @@ For metadata query we have:
 
 ```ignore
 impl File {
-    fn metadata(&self) -> Result<Metadata>{ /*...*/ }
+    pub fn metadata(&self) -> Result<Metadata>{ /*...*/ }
 }
 ```
 
@@ -301,7 +301,7 @@ For file length Manipulation we have
 
 ```ignore
 impl File {
-    fn set_len(&self, size: u64) -> Result<()>{ /*...*/ }
+    pub fn set_len(&self, size: u64) -> Result<()>{ /*...*/ }
 }
 ```
 
@@ -311,7 +311,7 @@ To acquire another independent reference(i.e. handle) to the underlying file:
 
 ```ignore
 impl File {
-    fn try_clone(&self) -> Result<File>{ /*...*/ }
+    pub fn try_clone(&self) -> Result<File>{ /*...*/ }
 }
 ```
 
@@ -321,7 +321,7 @@ The underlying file resides on a disk or some other external devices. As such, s
 
 ```ignore
 impl File {
-    fn sync_all(&self) -> Result<()>{ /*...*/ }
+    pub fn sync_all(&self) -> Result<()>{ /*...*/ }
 }
 ```
 
@@ -331,7 +331,7 @@ We also have
 
 ```ignore
 impl File {
-    fn sync_data(&self) -> Result<()>{ /*...*/ }
+    pub fn sync_data(&self) -> Result<()>{ /*...*/ }
 }
 ```
 
@@ -341,7 +341,7 @@ To set permissions on the file we have:[^unstable]
 
 ```ignore
 impl File {
-    fn set_permissions(&self, perm: Permissions) -> Result<()>{ /*...*/ }
+    pub fn set_permissions(&self, perm: Permissions) -> Result<()>{ /*...*/ }
 }
 ```
 

@@ -16,4 +16,4 @@
     * [std::error](error-readme.md)
     * [std::ffi](ffi-readme.md)
     * [std::fmt](fmt-readme.md)
-    * [std::fmt](fs-readme.md)
+    * [std::fs](fs-readme.md)

@@ -2,7 +2,7 @@
 
 > https://doc.rust-lang.org/std/ffi/
 
-This module defines some structs useful for FFI(foreign function interface) bindings. It primarily expose:
+This module defines some structs useful for FFI(foreign function interface) bindings. It primarily exposes:
 
 # CString
 

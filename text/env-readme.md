@@ -134,7 +134,7 @@ Note that, all the above four methods would panic if `key` provided is empty, or
 
 Also note that these methods delegate the real work to their underscore-prefixed implementation functions. This pattern is common when dealing with generic functions. In this case, only the work of `as_ref` needs to be generic, separating such part out from the actual non-generic implementation can help reduce the size of the actual binary code generated.
 
-# Directorys
+# Directories
 
 Next, we have a set of methods for some specific directorys.
 
