@@ -70,7 +70,7 @@ That is to say, any type of formatting argument implementing `Display` can then 
 
 We will come to how to actually implement these traits for custom types later. For now all we have to know is that the standard library has implemented these traits for built-in types nicely and properly for us. Thus, we can write:
 
-```ignore
+```rust
 format!("{}", 10); // => "10"
 format!("{:o}", 10); // => "12"
 format!("{:x}", 10); // => "a"
@@ -82,14 +82,14 @@ format!("{:b}", 10); // => "1010"
 
 After the `:` and before the type specification, additional formatting specifications can be used. Firt comes the width:
 
-```ignore
-format!("{:2x}, 10); // => " a"
+```rust
+format!("{:2x}", 10); // => " a"
 format!("{:2}", "a"); // => "a "
 ```
 
 This specifies the minimum width that the formatted argument should take up. Besides literal values, the width can also be specified by another formatting parameter. The specification can be done either by name or by index, but should be suffixed with a `$`:
 
-```ignore
+```rust
 format!("{:width$x}", 10, width=2); // => " a"
 format!("{:0$x}", 2); // => " 2"
 ```
@@ -100,14 +100,14 @@ For non-numerics, the default padding strategy is to fill with space character, 
 
 The padding strategy can be customized. The alignment is specified by a preceding `<`(left-aligned), `^`(center-aligned) or `>`(right-aligned):
 
-```ignore
+```rust
 format!("{:^4}", 10); // => " 10 "
 ```
 
 Additionally, a customized filling character can be provided before the alignment specification:
 
-```ignore
-format!("{:*^4}, 10); // => "*10*"
+```rust
+format!("{:*^4}", 10); // => "*10*"
 ```
 
 For numeric types, additional specifications can be inserted between padding specification and width specification. Namely:
@@ -137,7 +137,7 @@ Before directly diving into the forming traits, however, we should take a look a
 
 Every formatting traits defines a `fmt` method which takes a `&mut Formatter` as an argument. When a trait is implemented, the implementing type can then be used as the corresponding type during formatting.
 
-```ignored
+```ignore
 type Result = Result<(), Err>;
 // ...
 pub trait Display {
