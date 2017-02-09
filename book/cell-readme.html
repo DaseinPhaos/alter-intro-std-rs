@@ -49,7 +49,21 @@
 </li>
 <li><a  href='cmp-readme.html'><b>3.7.</b> std::cmp</a>
 </li>
-<li><a  href='default-readme.html'><b>3.8.</b> std::default</a>
+<li><a  href='collections-readme.html'><b>3.8.</b> std::collections</a>
+</li>
+<li><a  href='convert-readme.html'><b>3.9.</b> std::convert</a>
+</li>
+<li><a  href='default-readme.html'><b>3.10.</b> std::default</a>
+</li>
+<li><a  href='env-readme.html'><b>3.11.</b> std::env</a>
+</li>
+<li><a  href='error-readme.html'><b>3.12.</b> std::error</a>
+</li>
+<li><a  href='ffi-readme.html'><b>3.13.</b> std::ffi</a>
+</li>
+<li><a  href='fmt-readme.html'><b>3.14.</b> std::fmt</a>
+</li>
+<li><a  href='fs-readme.html'><b>3.15.</b> std::fs</a>
 </li>
 </ol>
 </li>
@@ -482,7 +496,7 @@
 
 <p>Simple and clear.</p>
 
-<p>Like <code>UnsafeCell&lt;T&gt;</code>, <code>RefCell&lt;T&gt;</code> implements <code>From&lt;T&gt;</code> and <code>!Sync</code>. It also implements <code>Send</code>, <code>Clone</code>, <code>Default</code>, <code>Debug</code>, <code>Eq</code>, <code>Ord</code>, <code>PartialEq&lt;RefCell&lt;T&gt;&gt;</code>, <code>PartialOrd&lt;RefCell&lt;T&gt;&gt;</code> when <code>T</code> implements those traits, respectively.</p>
+<p>Like <code>UnsafeCell&lt;T&gt;</code>, <code>RefCell&lt;T&gt;</code> implements <code>From&lt;T&gt;</code> and <code>!Sync</code>. It also implements <code>Send</code>, <code>Clone</code>, <code>Default</code>, <code>Debug</code>, <code>Eq</code>, <code>Ord</code>, <code>PartialEq&lt;RefCell&lt;T&gt;&gt;</code>, <code>PartialOrd&lt;RefCell&lt;T&gt;&gt;</code> when <code>T</code> implements those traits, respectively.<sup id="fnref2"><a href="#fn2" rel="footnote">2</a></sup></p>
 
 <div class="footnotes">
 <hr>
@@ -490,6 +504,10 @@
 
 <li id="fn1">
 <p>Actually <code>RefCell</code> has yet another method <code>borrow_state</code>. We didn&#39;t cover it in the text because it is unstable currently, and it won&#39;t be stable in any foreseeable future, as discussed in its related <a href="https://github.com/rust-lang/rust/issues/27733">issue</a>. The discussion itself, however, is worth mentioning, because it explained some general philosophy behind the interface designing of the standard library. Anyone interested should take a look.&nbsp;<a href="#fnref1" rev="footnote">&#8617;</a></p>
+</li>
+
+<li id="fn2">
+<p>As <a href="https://github.com/rust-lang/rfcs/pull/1651">RFC 1651</a> points out, the API design of <code>Cell</code> can be altered to support non-<code>Copy</code> types, check it out for more details. The actual implementation is nowhere under its way into the standard library yet, thus we wouldn&#39;t cover it here.&nbsp;<a href="#fnref2" rev="footnote">&#8617;</a></p>
 </li>
 
 </ol>
