@@ -9,15 +9,13 @@ pub trait Error: Debug + Display {
         None
     }
 }
+```
 
 At a minimum, errors must provide a description via `description()`. Additional details can be addded optionally via the `Display` trait. The error cause chain can also be provided via `cause()`.
 
 An example:
 
 ```rust
-
-
-
 use std::error::Error;
 use std::fmt;
 

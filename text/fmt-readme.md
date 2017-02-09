@@ -10,20 +10,20 @@ First let's check out the syntax of formatting.
 
 At its minimum, the macro requires a *format string*, which must be a string literal:
 
-```rust
+```ignore
 format!("Hey there!"); // => "Hey there!"
 ```
 
 Additionally, it can take one or more formatting arguments. These additional arguments would be captured by `{}`s in the format string. Quick examples:
 
-```rust
+```ignore
 format!("No.{}", 1); // => "No.1"
 format!("{}, {}!", "Hello", "world"); => "Hello, world!"
 ```
 
 In the format string, a `{` character can be escaped with `{{`, similarly, a `}` can be escaped with `}}`:
 
-```rust
+```ignore
 format!("{{}}"); // => "{}"
 ```
 
@@ -31,19 +31,19 @@ A format string is required to use *all* of its arguments. Otherwise, it is a co
 
 By default, a `{}` would capture the "next" formatting argument. However, one can put integer index into the braces to jump out of the default rules and directly index into the formatting arguments it want to capture:
 
-```rust
+```ignore
 format!("{1} {0}", 1, 2); // => "2 1"
 ```
 
 These "positional captures" don't participate the iterating progress of default captures, thus:
 
-```rust
+```ignore
 format!("{1} {} {0} {}", 1, 2); // => "2 1 1 2"
 ```
 
 Formatting parameters can be explicitly named. When named, format string can capture them by their name:
 
-```rust
+```ignore
 format!("{name}", name = "test"); // => "test"
 format!("{two} {} {}", 1, two="2"); // => "2 1 2"
 ```
@@ -70,7 +70,7 @@ That is to say, any type of formatting argument implementing `Display` can then 
 
 We will come to how to actually implement these traits for custom types later. For now all we have to know is that the standard library has implemented these traits for built-in types nicely and properly for us. Thus, we can write:
 
-```rust
+```ignore
 format!("{}", 10); // => "10"
 format!("{:o}", 10); // => "12"
 format!("{:x}", 10); // => "a"
@@ -82,14 +82,14 @@ format!("{:b}", 10); // => "1010"
 
 After the `:` and before the type specification, additional formatting specifications can be used. Firt comes the width:
 
-```rust
+```ignore
 format!("{:2x}, 10); // => " a"
 format!("{:2}", "a"); // => "a "
 ```
 
 This specifies the minimum width that the formatted argument should take up. Besides literal values, the width can also be specified by another formatting parameter. The specification can be done either by name or by index, but should be suffixed with a `$`:
 
-```rust
+```ignore
 format!("{:width$x}", 10, width=2); // => " a"
 format!("{:0$x}", 2); // => " 2"
 ```
@@ -100,13 +100,13 @@ For non-numerics, the default padding strategy is to fill with space character, 
 
 The padding strategy can be customized. The alignment is specified by a preceding `<`(left-aligned), `^`(center-aligned) or `>`(right-aligned):
 
-```rust
+```ignore
 format!("{:^4}", 10); // => " 10 "
 ```
 
 Additionally, a customized filling character can be provided before the alignment specification:
 
-```rust
+```ignore
 format!("{:*^4}, 10); // => "*10*"
 ```
 
