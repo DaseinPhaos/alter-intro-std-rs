@@ -37,7 +37,7 @@ Some other macros(such as `assert!`) also utilize the formatting syntax, but as 
 >
 > [`format_args!`]
 >
-> The core macro for formatted string creation. Generally not used externally.
+> The internal macro for formatted string creation. Also described above.
 
 > [`write!`](https://doc.rust-lang.org/std/macro.write.html)
 >
