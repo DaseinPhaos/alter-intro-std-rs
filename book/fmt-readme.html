@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>std::fmt</title>
+
+    <link rel="stylesheet" type="text/css" href="rustbook.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+                <div id="nav">
+                    <button id="toggle-nav">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </button>
+                </div>
+<div id='toc' class='mobile-hidden'>
+<ol class='chapter'>
+<li><a  href='README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a  href='macros-readme.html'><b>2.</b> Macros in std</a>
+</li>
+<li><a  href='mods-readme.html'><b>3.</b> Uncategorized Modules</a>
+<ol class='section'>
+<li><a  href='any-readme.html'><b>3.1.</b> std::any</a>
+</li>
+<li><a  href='ascii-readme.html'><b>3.2.</b> std::ascii</a>
+</li>
+<li><a  href='borrow-readme.html'><b>3.3.</b> std::borrow</a>
+</li>
+<li><a  href='boxed-readme.html'><b>3.4.</b> std::boxed</a>
+</li>
+<li><a  href='cell-readme.html'><b>3.5.</b> std::cell</a>
+</li>
+<li><a  href='clone-readme.html'><b>3.6.</b> std::clone</a>
+</li>
+<li><a  href='cmp-readme.html'><b>3.7.</b> std::cmp</a>
+</li>
+<li><a  href='collections-readme.html'><b>3.8.</b> std::collections</a>
+</li>
+<li><a  href='convert-readme.html'><b>3.9.</b> std::convert</a>
+</li>
+<li><a  href='default-readme.html'><b>3.10.</b> std::default</a>
+</li>
+<li><a  href='env-readme.html'><b>3.11.</b> std::env</a>
+</li>
+<li><a  href='error-readme.html'><b>3.12.</b> std::error</a>
+</li>
+<li><a  href='ffi-readme.html'><b>3.13.</b> std::ffi</a>
+</li>
+<li><a class='active' href='fmt-readme.html'><b>3.14.</b> std::fmt</a>
+</li>
+<li><a  href='fs-readme.html'><b>3.15.</b> std::fmt</a>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">std::fmt</h1>
+    <blockquote>
+<p><a href="https://doc.rust-lang.org/std/fmt/">https://doc.rust-lang.org/std/fmt/</a></p>
+</blockquote>
+
+<p>The module contains the supporting traits for the <code>format!</code> series of macros.</p>
+
+<h1 id='formatting-syntax' class='section-header'><a href='#formatting-syntax'>Formatting Syntax</a></h1>
+<p>First let&#39;s check out the syntax of formatting.</p>
+
+<p>At its minimum, the macro requires a <em>format string</em>, which must be a string literal:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Hey there!&quot;</span>); <span class='comment'>// =&gt; &quot;Hey there!&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22Hey%20there!%22)%3B%20%2F%2F%20%3D%3E%20%22Hey%20there!%22%0A%7D">Run</a></pre>
+
+<p>Additionally, it can take one or more formatting arguments. These additional arguments would be captured by <code>{}</code>s in the format string. Quick examples:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;No.{}&quot;</span>, <span class='number'>1</span>); <span class='comment'>// =&gt; &quot;No.1&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}, {}!&quot;</span>, <span class='string'>&quot;Hello&quot;</span>, <span class='string'>&quot;world&quot;</span>); <span class='op'>=&gt;</span> <span class='string'>&quot;Hello, world!&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22No.%7B%7D%22%2C%201)%3B%20%2F%2F%20%3D%3E%20%22No.1%22%0Aformat!(%22%7B%7D%2C%20%7B%7D!%22%2C%20%22Hello%22%2C%20%22world%22)%3B%20%3D%3E%20%22Hello%2C%20world!%22%0A%7D">Run</a></pre>
+
+<p>In the format string, a <code>{</code> character can be escaped with <code>{{</code>, similarly, a <code>}</code> can be escaped with <code>}}</code>:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{{}}&quot;</span>); <span class='comment'>// =&gt; &quot;{}&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B%7B%7D%7D%22)%3B%20%2F%2F%20%3D%3E%20%22%7B%7D%22%0A%7D">Run</a></pre>
+
+<p>A format string is required to use <em>all</em> of its arguments. Otherwise, it is a compile-time error.</p>
+
+<p>By default, a <code>{}</code> would capture the &quot;next&quot; formatting argument. However, one can put integer index into the braces to jump out of the default rules and directly index into the formatting arguments it want to capture:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{1} {0}&quot;</span>, <span class='number'>1</span>, <span class='number'>2</span>); <span class='comment'>// =&gt; &quot;2 1&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B1%7D%20%7B0%7D%22%2C%201%2C%202)%3B%20%2F%2F%20%3D%3E%20%222%201%22%0A%7D">Run</a></pre>
+
+<p>These &quot;positional captures&quot; don&#39;t participate the iterating progress of default captures, thus:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{1} {} {0} {}&quot;</span>, <span class='number'>1</span>, <span class='number'>2</span>); <span class='comment'>// =&gt; &quot;2 1 1 2&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B1%7D%20%7B%7D%20%7B0%7D%20%7B%7D%22%2C%201%2C%202)%3B%20%2F%2F%20%3D%3E%20%222%201%201%202%22%0A%7D">Run</a></pre>
+
+<p>Formatting parameters can be explicitly named. When named, format string can capture them by their name:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{name}&quot;</span>, <span class='ident'>name</span> <span class='op'>=</span> <span class='string'>&quot;test&quot;</span>); <span class='comment'>// =&gt; &quot;test&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{two} {} {}&quot;</span>, <span class='number'>1</span>, <span class='ident'>two</span><span class='op'>=</span><span class='string'>&quot;2&quot;</span>); <span class='comment'>// =&gt; &quot;2 1 2&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7Bname%7D%22%2C%20name%20%3D%20%22test%22)%3B%20%2F%2F%20%3D%3E%20%22test%22%0Aformat!(%22%7Btwo%7D%20%7B%7D%20%7B%7D%22%2C%201%2C%20two%3D%222%22)%3B%20%2F%2F%20%3D%3E%20%222%201%202%22%0A%7D">Run</a></pre>
+
+<p>Named formatting parameters behave just like normal formatting parameters. There is one restriction though: it is not valid to put normal parameters after any named parameters.</p>
+
+<h2 id='argument-types' class='section-header'><a href='#argument-types'>Argument Types</a></h2>
+<p>Each formatting argument have a &quot;type&quot;, dictated by the format string. These &quot;types&quot; are specified in the capturing braces. When a same parameter is captured for multiple times, the format string has to make sure that all those captures refer to the argument by <em>one</em> type. These types are actually mapped to traits defined in this module. Currently, the mapping is as follows:</p>
+
+<ul>
+<li><em>empty</em> =&gt; <code>Display</code></li>
+<li><code>?</code> =&gt; <code>Debug</code></li>
+<li><code>o</code> =&gt; <code>Octal</code></li>
+<li><code>x</code> =&gt; <code>LowerHex</code></li>
+<li><code>X</code> =&gt; <code>UpperHex</code></li>
+<li><code>p</code> =&gt; <code>Pointer</code></li>
+<li><code>b</code> =&gt; <code>Binary</code></li>
+<li><code>e</code> =&gt; <code>LowerExp</code></li>
+<li><code>E</code> =&gt; <code>UpperExp</code></li>
+</ul>
+
+<p>Similar to Rust&#39;s syntax when introducing a variable, inside the capturing braces, a <code>:</code> is optionally used to separate the formatting argument&#39;s name/index(if any) from its type.</p>
+
+<p>That is to say, any type of formatting argument implementing <code>Display</code> can then be captured in the format string with <code>{}</code>,  any type of argument implementing <code>Binary</code> can be captured with <code>{:b}</code>...</p>
+
+<p>We will come to how to actually implement these traits for custom types later. For now all we have to know is that the standard library has implemented these traits for built-in types nicely and properly for us. Thus, we can write:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot;10&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:o}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot;12&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:x}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot;a&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:X}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot;A&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:b}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot;1010&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%2210%22%0Aformat!(%22%7B%3Ao%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%2212%22%0Aformat!(%22%7B%3Ax%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%22a%22%0Aformat!(%22%7B%3AX%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%22A%22%0Aformat!(%22%7B%3Ab%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%221010%22%0A%7D">Run</a></pre>
+
+<h2 id='additional-specifications' class='section-header'><a href='#additional-specifications'>Additional Specifications</a></h2>
+<p>After the <code>:</code> and before the type specification, additional formatting specifications can be used. Firt comes the width:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:2x}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot; a&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:2}&quot;</span>, <span class='string'>&quot;a&quot;</span>); <span class='comment'>// =&gt; &quot;a &quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B%3A2x%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%22%20a%22%0Aformat!(%22%7B%3A2%7D%22%2C%20%22a%22)%3B%20%2F%2F%20%3D%3E%20%22a%20%22%0A%7D">Run</a></pre>
+
+<p>This specifies the minimum width that the formatted argument should take up. Besides literal values, the width can also be specified by another formatting parameter. The specification can be done either by name or by index, but should be suffixed with a <code>$</code>:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:width$x}&quot;</span>, <span class='number'>10</span>, <span class='ident'>width</span><span class='op'>=</span><span class='number'>2</span>); <span class='comment'>// =&gt; &quot; a&quot;</span>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:0$x}&quot;</span>, <span class='number'>2</span>); <span class='comment'>// =&gt; &quot; 2&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B%3Awidth%24x%7D%22%2C%2010%2C%20width%3D2)%3B%20%2F%2F%20%3D%3E%20%22%20a%22%0Aformat!(%22%7B%3A0%24x%7D%22%2C%202)%3B%20%2F%2F%20%3D%3E%20%22%202%22%0A%7D">Run</a></pre>
+
+<p>If the formatted argument doesn&#39;t fill up, then padding is added.</p>
+
+<p>For non-numerics, the default padding strategy is to fill with space character, left-aligned. For numerics, the default padding strategy is to fill with space character, right-aligned.</p>
+
+<p>The padding strategy can be customized. The alignment is specified by a preceding <code>&lt;</code>(left-aligned), <code>^</code>(center-aligned) or <code>&gt;</code>(right-aligned):</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:^4}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot; 10 &quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B%3A%5E4%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%22%2010%20%22%0A%7D">Run</a></pre>
+
+<p>Additionally, a customized filling character can be provided before the alignment specification:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:*^4}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot;*10*&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B%3A*%5E4%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%22*10*%22%0A%7D">Run</a></pre>
+
+<p>For numeric types, additional specifications can be inserted between padding specification and width specification. Namely:</p>
+
+<ul>
+<li><code>+</code> can be used to specify that signs should always be printed.</li>
+<li><code>#</code> specifies some additional printing forms:
+
+<ul>
+<li><code>#?</code> would pretty-print the <code>Debug</code> formatting trait</li>
+<li><code>#x</code> precedes arguments with <code>0x</code></li>
+<li><code>#X</code> precedes with <code>0x</code></li>
+<li><code>#b</code> precedes with <code>0b</code></li>
+<li><code>#o</code> precedes with <code>0o</code></li>
+</ul></li>
+<li><code>0</code> indicates that integer padding should both be done with <code>0</code> as well as be sign-aware. Thuse, <code>format!({:03}, 1)</code> yields <code>&quot;001</code>; <code>format!({:03}, -1)</code> yields <code>-01</code>.</li>
+</ul>
+
+<p>For non-numeric types, after the width specification, an <code>.precision</code> can be used to specify the &quot;maximum width&quot; of the formatted string. Longer results would be truncated. For integer types, this is ignored. For floating-point types, this indicates how many digits after thte decimal points should be printed.</p>
+
+<p>To specify the <code>precision</code>, one can use:
+- An integer
+- An indiced/named argument, preceding with <code>$</code>(just like the width specification)
+- An asterisk(<code>.*</code>). This will consume two argument slots. The first input should be of type <code>usize</code>, representing the precision; the second input should be the actual argument to be printed with this precision.</p>
+
+<p>That&#39;s all about syntax. Next we are going to cover how to format custom defined types.</p>
+
+<h1 id='formatter' class='section-header'><a href='#formatter'>Formatter</a></h1>
+<p>Before directly diving into the forming traits, however, we should take a look at the <code>Formatter</code> struct first, as this is the key component of custom type formattting.</p>
+
+<p>Every formatting traits defines a <code>fmt</code> method which takes a <code>&amp;mut Formatter</code> as an argument. When a trait is implemented, the implementing type can then be used as the corresponding type during formatting.</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>type</span> <span class='prelude-ty'>Result</span> <span class='op'>=</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='prelude-val'>Err</span><span class='op'>&gt;</span>;
+<span class='comment'>// ...</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Display</span> {
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>:<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span>;
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Atype%20Result%20%3D%20Result%3C()%2C%20Err%3E%3B%0A%2F%2F%20...%0Apub%20trait%20Display%20%7B%0A%20%20%20%20fn%20fmt(%26self%2C%20f%3A%26mut%20Formatter)%20-%3E%20Result%3B%0A%7D%0A%7D">Run</a></pre>
+
+<p>The formatter has lots of methods exposed. However, normally we don&#39;t need to use any of it: it implements <code>std::io::Write</code>, thus, we can use standard macro <code>write!</code> and <code>writeln!</code> to deal with it instead. An example:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
+
+<span class='kw'>struct</span> <span class='ident'>Point</span> {
+    <span class='ident'>x</span>: <span class='ident'>i32</span>,
+    <span class='ident'>y</span>: <span class='ident'>i32</span>,
+}
+
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Point</span> {
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>:<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;({}, {})&quot;</span>, <span class='self'>self</span>.<span class='ident'>x</span>, <span class='self'>self</span>.<span class='ident'>y</span>)
+    }
+}
+
+<span class='kw'>let</span> <span class='ident'>p</span> <span class='op'>=</span> <span class='ident'>Point</span> { <span class='ident'>x</span>: <span class='number'>0</span>, <span class='ident'>y</span>: <span class='number'>1</span>};
+<span class='kw'>let</span> <span class='ident'>p_display</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>p</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>p_display</span>, <span class='string'>&quot;(0, 1)&quot;</span>);<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Ause%20std%3A%3Afmt%3B%0A%0Astruct%20Point%20%7B%0A%20%20%20%20x%3A%20i32%2C%0A%20%20%20%20y%3A%20i32%2C%0A%7D%0A%0Aimpl%20fmt%3A%3ADisplay%20for%20Point%20%7B%0A%20%20%20%20fn%20fmt(%26self%2C%20f%3A%26mut%20fmt%3A%3AFormatter)%20-%3E%20fmt%3A%3AResult%20%7B%0A%20%20%20%20%20%20%20%20write!(f%2C%20%22(%7B%7D%2C%20%7B%7D)%22%2C%20self.x%2C%20self.y)%0A%20%20%20%20%7D%0A%7D%0A%0Alet%20p%20%3D%20Point%20%7B%20x%3A%200%2C%20y%3A%201%7D%3B%0Alet%20p_display%20%3D%20format!(%22%7B%7D%22%2C%20p)%3B%0Aassert_eq!(p_display%2C%20%22(0%2C%201)%22)%3B%0A%7D">Run</a></pre>
+
+<p>Complete listing of methods can be found in the <a href="https://doc.rust-lang.org/std/fmt/struct.Formatter.html">reference</a>.</p>
+
+<blockquote>
+<p>TODO: introduce <code>format_args!</code>.</p>
+</blockquote>
+
+    <script src='rustbook.js'></script>
+</div></div>
+
+
+</body>
+</html>
