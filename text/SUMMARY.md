@@ -17,3 +17,4 @@
     * [std::ffi](ffi-readme.md)
     * [std::fmt](fmt-readme.md)
     * [std::fs](fs-readme.md)
+    * [std::hash](hash-readme.md)
