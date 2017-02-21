@@ -778,7 +778,7 @@ impl<W: Write> Drop for BufWriter<W> {
 }
 ```
 
-Note that this is also where the `panicked` flag gets used: when `true` the flag indicates that the `drop`ing is because of unwinding which is caused by a panic happened during some `writ`ing invocation. When this is the case, no further writing should be performed by the `drop`ing.
+Note that this is also where the `panicked` flag gets used: when `true` the flag indicates that the `drop`ing is because of unwinding which is caused by a panic happened during some `writ`ing invocation. When this is the case, no further writing should be performed by the `drop`ing (to prevent double-panic).
 
 It also expose methods for conversions to the underlying writer:
 
@@ -795,7 +795,9 @@ impl<W: Write> BufWriter<W> {
 }
 ```
 
-Note that unlike `BufReader`, the `into_inner` method of `BufWriter` actually *does* try to flush the buffered content into `inner`. If the flushing fails, the value of `BufWriter` as well as the failing `Error` would be returned inside an `IntoInnerError`.
+Note that unlike `BufReader`, the `into_inner` method of `BufWriter` actually *does* try to flush the buffered content into `inner`. If the flushing fails, the value of `BufWriter` as well as the failing `Error` would be returned inside an `IntoInnerError`. Also note that this method is the reason why `BufWriter<T>` wraps around an `Option<T>` (rather than simply wrapping `T`). Unlike `BufReader<T>`, `BufWriter` implements `Drop`. As such, it is not allowed to directly move the value of its field out.[^1] Thus another layer of wrapping.
+
+[^1]: To get a furthur explanation check out [The Rustonomicon](https://doc.rust-lang.org/nomicon/destructors.html).
 
 Also note that the wrapper implements `Debug` if the underlying writer implements `Debug`.
 
@@ -848,5 +850,276 @@ impl<W: Write> Write for LineWriter<W> {
 
 It also implements `Debug` if the underlying writer implements it.
 
-# St
+# Special Adaptors
 
+The module also provides some special reader/writers.
+
+## Empty
+
+```ignore
+pub struct Empty { _priv: () }
+```
+
+The struct implements `Read` and `BufRead` as follows:
+
+```ignore
+impl Read for Empty {
+    fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> { Ok(0) }
+}
+
+impl BufRead for Empty {
+    fn fill_buf(&mut self) -> io::Result<&[u8]> { Ok(&[]) }
+    fn consume(&mut self, _n: usize) {}
+}
+```
+
+Thus, it represents an "empty" reader which will always return EOF.
+
+To construct it, one calls the module level function:
+
+```ignore
+pub fn empty() -> Empty { Empty { _priv: () } }
+```
+
+## Repeat
+
+```ignore
+pub struct Repeat { byte: u8 }
+```
+
+The struct implements `Read` as:
+
+```ignore
+impl Read for Repeat {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        for slot in &mut *buf {
+            *slot = self.byte;
+        }
+        Ok(buf.len())
+    }
+}
+```
+
+Thus, it represents a reader which yields one single `byte` over and over again.
+
+To construct it, one calls the module level function:
+
+```ignore
+pub fn repreat(byte: u8) -> Repeat { Repeat { byte: byte } }
+```
+
+## Sink
+
+```ignore
+pub struct Sink { _priv: () }
+```
+
+The struct implements `Write` as:
+
+```ignore
+impl Write for Sink {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> { Ok(buf.len()) }
+    fn flush(&mut self) -> io::Resut<()> { Ok(()) }
+}
+```
+
+Thus, it represents a "sink" that can take any input and throw them into the void.
+
+To construct it, one call the module level function
+
+```ignore
+pub fn sink() -> Sink { Sink { _priv: () } }
+```
+
+## Cursor
+
+```ignore
+pub struct Cursor<T> {
+    inner: T,
+    pos: u64,
+}
+```
+
+The struct is meant to be a wrapper around some other datastream `T`, providing a "cursor" pointing into it.
+
+Construction is straightforward:
+
+```ignore 
+impl<T> Cursor<T> {
+    pub fn new(inner: T) -> Cursor<T> {
+        Cursor { pos: 0, inner: inner }
+    }
+}
+```
+
+For `T: AsRef[u8]`, which can be considered as a readable datastream, the module provides implementation for `BufRead` and `Seek`:
+
+```ignore
+impl<T> BufRead for Cursor<T> where T: AsRef<[u8]> {
+    fn fill_bf(&mut self) -> io::Result<&[u8]> {
+        // `amt` is the index of the next byte available
+        // the comparison is neccessary, as we don't guard against
+        // overflows when incrementing `self.pos`.
+        let amt = cmp::min(self.pos, self.inner.as_ref().len() as u64);
+        Ok(&self.inner.as_ref()[(amt as usize)..])
+    }
+
+    fn consume(&mut self, amt: usize) { self.pos += amt as u64; }
+}
+
+impl<T> Read for Cursor<T> where T: AsRef<[u8]> {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        let n = Read::read(&mut self.fill_buf()?, buf)?;
+        self.pos += n as u64;
+        Ok(n)
+    }
+}
+
+impl<T> Seek for Cursor<T> where T: AsRef<[u8]> {
+    fn seek(&mut self, style: SeekFrom) -> io::Result<u64> {
+        let pos = match style {
+            SeekFrom::Start(n) => { self.pos = n; return Ok(n); } // early return here, caution!
+            SeekFrom::End(n) => self.inner.as_ref().len() as i64 + n;
+            SeekFrom::Current(n) => self.pos as i64 + n,
+        };
+
+        if pos < 0 {
+            Err(Error::new(ErrorKind::InvalidInput,
+                "invalid seek to a negative position"));
+        } else {
+            self.pos = pos as u64;
+            Ok(self.pos)
+        }
+    }
+}
+```
+
+For `T: &'a mut [u8]`, `T: Vec<u8>`, `T: Box<[u8]>` which can all be considered as writable datastream, the module also implements `Write`:
+
+```ignore
+impl<'a> Write for Cursor<&'a mut [u8]> {
+    #[inline]
+    fn write(&mut self, data: &[u8]) -> io::Result<usize> {
+        let pos = cmp::min(self.pos, self.inner.len() as u64);
+        let amt = (&mut self.inner[(pos as usize)..]).write(data)?;
+        self.pos += amt as u64;
+        Ok(amt)
+    }
+
+    fn flush(&mut self) -> io::Result<()> { Ok(()) }
+}
+```
+
+The implementation for `Cursor<Vec<u8>>` and `Cursor<Box<[u8]>>` are somewhat similar, thus omitted.[^2]
+
+[^2]: Actually, no. The implementation for `Cursor<Vec<u8>>` is a bit more complicated, as it tries to resize the vector to fit in all the bytes provided.
+
+# Standard IO
+
+The module also provides handle structures for standard IO streams of the process.
+
+## Stdin
+
+```ignore
+pub struct Stdin { /* fields omitted */ }
+```
+
+This struct represents a handle to the standard input stream of the process. The handle can be considered as a shared reference to the actual underlying input buffer of the process. Accessing the underlying buffer through this handle is synchronized via a mutex.
+
+To provide such a handle the module exploses a function
+
+```ignore
+pub fn stdin() -> Stdin { /*...*/ }
+```
+
+The handle implements `Read` as we'd expect. It also implements
+
+```ignore
+impl Stdin {
+    pub fn read_line(&self, buf: &mut String) -> Result<usize> {/*...*/}
+}
+```
+
+for convinient line-based reading.
+
+### StdinLock
+
+Actually, all the reading methods of `Stdin` is implemented via another struct,
+
+```ignore
+pub struct StdinLock<'a> {/* fields omitted */ }
+```
+
+The structure represents a locked reference to the standard input buffer. The lock is released when this lock goes out of scope.
+
+To acquire such a lock one invokes
+
+```ignore
+impl Stdin {
+    pub fn lock(&self) -> StdinLock {/*...*/}
+}
+```
+
+As the locked reference can have exclusive reading access to the underlying resource, it also implements `BufRead`.
+
+## Stdout
+
+On the other side of the spectrum lies
+
+```ignore
+pub struct Stdout { /* fields omitted */ }
+```
+
+It is a synchronized handle to the standard output stream of the current process.
+
+Likewise, to provide such a handle the module has
+
+```ignore
+pub fn stdout() -> Stdout {/*...*/}
+```
+
+To gain exclusive access to the underlying stream
+
+```ignore
+impl Stdout {
+    pub fn lock(&self) -> StdoutLock {/*...*/}
+}
+```
+
+The `Write` trait is implemented for this struct as well as its locking counterpart `StdoutLock`, as we'd expect.
+
+# Leftovers
+
+In addition, the module also provides
+
+- `copy`,
+    ```ignore
+    pub fn copy<R, W>(reader: &mut R, writer: &mut W) -> Result<u64>
+        where R: Read + ?Sized,
+              W: Write + ?Sized {
+        let mut buf = [0; DEFAULT_BUF_SIZE];
+        let mut written = 0;
+        loop {
+            let len = match reader.read(&mut buf) {
+                Ok(0) => return Ok(written),
+                Ok(len) => len,
+                Err(ref e) if e.kind() == ErrorKind::Interrupted => continue,
+                Err(e) => return Err(e),
+            };
+            writer.write_all(&buf[..len])?;
+            written += len as u64;
+        }
+    }
+    ```
+    The function tries to read the entire contents of a reader and writes it into another reader.
+
+- `prelude` submodule
+    `std::io` has a bunch of stuff defined. To alleviate importing many common IO traits, this submodule imports the core traits of `io`. Concepturally, it is defined as
+    ```ignore
+    pub mod prelude {
+        pub use super::Read;
+        pub use super::Write;
+        pub use super::BufRead;
+        pub use super::Seek;
+    }
+    ```
