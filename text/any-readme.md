@@ -2,11 +2,6 @@
 
 > ref: https://doc.rust-lang.org/std/any/
 
-TODO:
-
-- [ ] Fix backward reference: any reference to `std` components not mentioned beforehead should be marked and explained.
-
-
 This module defines the `Any` trait and the `TypeId` struct. Together they form minimal support for runtime reflection.
 
 #TypeId
@@ -49,7 +44,7 @@ fn main() {
 
 #Any
 
-The `Any` trait, however, being implemented for any `'static` types as follows(comments and attributes omitted):
+The `Any` trait,
 
 ```ignore
 pub trait Any: 'static {
@@ -63,38 +58,9 @@ impl<T: 'static + ?Sized> Any for T {
 }
 ```
 
-is more powerful. When used statically it's nothing more than a object-oriented wrapper for `TypeId`'s `of` method, not to mention that the method is currently marked as `unstable`([#27745](https://github.com/rust-lang/rust/issues/27745)).
+is more powerful.
 
-
-Its true strength comes when used as a trait object. It has an `is<T>` method whcich would return true if the underlying object is of type `T`, and two `downcast`ing methods returning corresponding `Some`.
-
-The general use case can be demonstrated as follow:
-
-```rust
-use std::any::Any;
-
-fn is_string(a: &Any) -> bool {
-    a.is::<String>()   
-}
-
-fn format_if_str_literal(a: &Any) -> String {
-    if let Some(s) = a.downcast_ref::<&'static str>() {
-        format!("It is a string literal with a length of ({}): {}", s.len(), s)
-    } else {
-        format!("Not a string literal...")
-    }
-}
-
-fn main() {
-    assert_eq!(format_if_str_literal(&1.1), "Not a string literal...");
-    assert_eq!(format_if_str_literal(&"cookie monster"), "It is a string literal with a length of (14): cookie monster");
-
-    assert!(is_string(&"Foo".to_string()));
-    assert!(!is_string(&"Foo"));
-}
-```
-
-The actual implementation looks like the following:
+Its true strength is revealed when used as a trait object. It has an `is<T>` method whcich would return true if the underlying object is of type `T`, and two `downcast`ing methods returning corresponding `Some`:
 
 ```ignore
 impl Any {
@@ -131,8 +97,31 @@ impl Any+Send {
     // Same as above..
 }
 ```
- Note the direct use of `impl` on trait objects. This is valid code, but The Book has failed to mention it(not in my memory).
 
-Also note that for convenience, these methods are also implemented for trait object `Any+Send` (with the implementation simply forwarding to `Any`).
+The general use case is demonstrated as follow:
+
+```rust
+use std::any::Any;
+
+fn is_string(a: &Any) -> bool {
+    a.is::<String>()   
+}
+
+fn format_if_str_literal(a: &Any) -> String {
+    if let Some(s) = a.downcast_ref::<&'static str>() {
+        format!("It is a string literal with a length of ({}): {}", s.len(), s)
+    } else {
+        format!("Not a string literal...")
+    }
+}
+
+fn main() {
+    assert_eq!(format_if_str_literal(&1.1), "Not a string literal...");
+    assert_eq!(format_if_str_literal(&"cookie monster"), "It is a string literal with a length of (14): cookie monster");
+
+    assert!(is_string(&"Foo".to_string()));
+    assert!(!is_string(&"Foo"));
+}
+```
 
 Another thing to notice is that `std::fmt::Debug` is implemented for `Any`, and of course for `Any+Send`.
