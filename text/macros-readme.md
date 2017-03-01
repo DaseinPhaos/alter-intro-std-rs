@@ -27,7 +27,7 @@ These macros are used to `format` a `String`; `write` the result to some buffer;
 
 These are among the most widely used and well-known macros defined in `std` rust, thus should be covered here first. However, the actual formatting syntax they depend on is somewhat involved, and thus will be introduced in a separate post about [`std::fmt`](fmt-readme.md).[^rbef]
 
-[^rbef]: reference to the correpsonding chapter in [Rust by Example](http://rustbyexample.com/hello/print.html)
+[^rbef]: reference to the corresponding chapter in [Rust by Example](http://rustbyexample.com/hello/print.html)
 
 Some other macros(such as `assert!`) also utilize the formatting syntax, but as formatting is not their primary concern, they are not put under this category.
 
@@ -110,7 +110,7 @@ Assertions are runtime checks that once failed would `panic` the calling thread.
 >
 > Declares a new thread local storage key of type `std::thread::LocalKey`.
 >
-> The macro wraps any number of static delcarations and makes them thread local.
+> The macro wraps any number of static declarations and makes them thread local.
 >
 > ```rust
 > use std::cell::RefCell;
@@ -153,7 +153,7 @@ Assertions are runtime checks that once failed would `panic` the calling thread.
 >
 > This was once a popular macro. In fact, it was so popular, that the Rust team decided to introduce it into the core syntax, using `?`. Now we should always prefer using `?`.
 
-# Panicing Markers
+# Panicking Markers
 
 > [`unimplemented!`](https://doc.rust-lang.org/std/macro.unimplemented.html)
 >
@@ -239,7 +239,7 @@ These macros can take some input tokens and turns them to some specific `&'stati
 
 > [`column!`](https://doc.rust-lang.org/std/macro.column.html)
 >
-> Expands to the colunmn number on which it was invoked, yielding a `u32`.
+> Expands to the column number on which it was invoked, yielding a `u32`.
 
 > [`line!`](https://doc.rust-lang.org/std/macro.line.html)
 >

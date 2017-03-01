@@ -11,7 +11,7 @@ pub trait Error: Debug + Display {
 }
 ```
 
-At a minimum, errors must provide a description via `description()`. Additional details can be addded optionally via the `Display` trait. The error cause chain can also be provided via `cause()`.
+At a minimum, errors must provide a description via `description()`. Additional details can be added optionally via the `Display` trait. The error cause chain can also be provided via `cause()`.
 
 An example:
 

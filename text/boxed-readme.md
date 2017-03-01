@@ -30,9 +30,9 @@ impl<T: ?Sized> Box<T> {
 
 The `new` method allocates memory on the heap and places the `x` into it, then return the boxed `Box<T>`.
 
-Then `from_raw` method constructs a box from raw pointer `raw`. After calling, the pointee is owned by the resulting `Box`. This is considered as using raw pointer, thus the method is marked as `unsafe`. The only valid pointer to pass to this function is the one take from anohter `Box` via `Box::into_raw` function.
+Then `from_raw` method constructs a box from raw pointer `raw`. After calling, the pointee is owned by the resulting `Box`. This is considered as using raw pointer, thus the method is marked as `unsafe`. The only valid pointer to pass to this function is the one take from another `Box` via `Box::into_raw` function.
 
-The `into_raw` method, on the other hand, consumes the calling `Box`, and returns a raw pointer pointing to the calling data. The caller should be responsible for that memory after invoking this funcion. Note that this is an associated function. As such, the calling syntax should be `Box::into_raw(b)` instead of `b.into_raw()`. This is so that there is no conflict with methods of the inner type.
+The `into_raw` method, on the other hand, consumes the calling `Box`, and returns a raw pointer pointing to the calling data. The caller should be responsible for that memory after invoking this function. Note that this is an associated function. As such, the calling syntax should be `Box::into_raw(b)` instead of `b.into_raw()`. This is so that there is no conflict with methods of the inner type.
 
 Additionally, for `T: Any + 'static` (` + Send`), the struct `Box<T>` also implements `downcast`.
 

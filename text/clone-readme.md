@@ -15,7 +15,7 @@ pub trait Clone: Sized {
 
 The trait provides the ability to explicitly duplicate an object.
 
-While the `Copy` trait allows types to be implicitly copyed when assigning or passing by value; the trait only suits those types which are "cheap"(not large, don't require heap allocation) and "safe"(do not contain owned pointers or implement `Drop`) to copy.
+While the `Copy` trait allows types to be implicitly copied when assigning or passing by value; the trait only suits those types which are "cheap"(not large, don't require heap allocation) and "safe"(do not contain owned pointers or implement `Drop`) to copy.
 
 For other types, copies must be made explicitly, by convention implementing the `std::clone::Clone` trait and calling its `clone` method.
 

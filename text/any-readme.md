@@ -6,7 +6,7 @@ This module defines the `Any` trait and the `TypeId` struct. Together they form 
 
 #TypeId
 
-A `TypeId` represents a globally unique identifier for a type. It's an opacue object, but does allow basic operations such as cloning, comparison, and formatting.
+A `TypeId` represents a globally unique identifier for a type. It's an opaque object, but does allow basic operations such as cloning, comparison, and formatting.
 
 currently it is only available for `'static` types.
 
@@ -60,7 +60,7 @@ impl<T: 'static + ?Sized> Any for T {
 
 is more powerful.
 
-Its true strength is revealed when used as a trait object. It has an `is<T>` method whcich would return true if the underlying object is of type `T`, and two `downcast`ing methods returning corresponding `Some`:
+Its true strength is revealed when used as a trait object. It has an `is<T>` method which would return true if the underlying object is of type `T`, and two `downcast`ing methods returning corresponding `Some`:
 
 ```ignore
 impl Any {

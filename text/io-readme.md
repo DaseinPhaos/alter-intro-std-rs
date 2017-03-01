@@ -26,7 +26,7 @@ type Result<T> = Result<T, Error>;
 
 We'd come to this `Error` type later.
 
-With the `read` method implemented, `Read` also provides some additional defaultly implemented methods, including:
+With the `read` method implemented, `Read` also provides some additional default-implemented methods, including:
 
 ```ignore
 pub trait Read {
@@ -72,7 +72,7 @@ fn read_to_end<R>(r: &mut R, buf: &mut Vec<u8>) -> Result<usize>
 }
 ```
 
-The function uses a loop to repeatly read bytes from reader `r`, until an EOF is reached (indicated by an `Ok(0)`) or an error other than interruption is encountered. At the beginning of each loop, it checks whether the `buf`fer can read in any more bytes. If not, it allocates more capacity for the buffer. The allocation is done adaptivly, such that upon each new allocation, the additional size to be allocated would double. This reduces the total number of allocations needed. After the loop, the buffer is then truncated to the actual length of bytes it currently holds, and the result `ret` is returned.
+The function uses a loop to repeatly read bytes from reader `r`, until an EOF is reached (indicated by an `Ok(0)`) or an error other than interruption is encountered. At the beginning of each loop, it checks whether the `buf`fer can read in any more bytes. If not, it allocates more capacity for the buffer. The allocation is done adaptively, such that upon each new allocation, the additional size to be allocated would double. This reduces the total number of allocations needed. After the loop, the buffer is then truncated to the actual length of bytes it currently holds, and the result `ret` is returned.
 
 There is also a method to read the bytes into a `&mut String`:
 
@@ -140,7 +140,7 @@ pub trait Read {
 }
 ```
 
-The implementation is quite straightforward. It makes use of a mutable reference, `buf`. When additional bytes is read into the buffer, `buf` shrinks. If the length of `buf` shrinks to `0`, then exact bytes of the original buffer size have been read. Early end of looping causd by errors causes early returns. Early end of looping caused by `EOF` is catched by another round of checking.
+The implementation is quite straightforward. It makes use of a mutable reference, `buf`. When additional bytes is read into the buffer, `buf` shrinks. If the length of `buf` shrinks to `0`, then exact bytes of the original buffer size have been read. Early end of looping caused by errors causes early returns. Early end of looping caused by `EOF` is caught by another round of checking.
 
 Next there is a utility method to create a mutable reference of this reader:
 
@@ -221,7 +221,7 @@ impl<T: Read, U: Read> Read for Chain<T, U> {
 
 It also implements `BufRead`, which would be covered later.
 
-Finally, the trait defines a `take` method that consumes `self` and returns an adaptor that will read at most `limit` bytes:
+Finally, the trait defines a `take` method that consumes `self` and returns an adapter that will read at most `limit` bytes:
 
 ```ignore
 pub trait Read {
@@ -332,7 +332,7 @@ pub trait Write {
 }
 ```
 
-This method is primarily used to incoperate with the formatting macros. It is rarelly called alone explicitly. To write a formatted string into the sink, the `write!` macro should be preferred.
+This method is primarily used to incorporate with the formatting macros. It is rarely called alone explicitly. To write a formatted string into the sink, the `write!` macro should be preferred.
 
 Finally, there is:
 
@@ -352,7 +352,7 @@ pub trait Seek {
 }
 ```
 
-The `Seek` trait represents an IO object with a "cursor", which represents the current position in the IO stream represented by the object. The required method `seek` attempts to move that cursor. Suching moving should be relative, thus the possible relative positions (along with how many bytes would be moved) are passed in as the `SeekFrom` enum, which is defined as:
+The `Seek` trait represents an IO object with a "cursor", which represents the current position in the IO stream represented by the object. The required method `seek` attempts to move that cursor. Such moving should be relative, thus the possible relative positions (along with how many bytes would be moved) are passed in as the `SeekFrom` enum, which is defined as:
 
 ```ignore
 #[derive(Copy, PartialEq, Eq, Clone, Debug)]
@@ -378,9 +378,9 @@ pub trait BufRead: Read {
 
 `BufRead` represents a specific type of `Read`er that has an internal buffer. Having a buffer allows extra ways of reading to become efficient.
 
-The trait requirs two methods to be implemented.
+The trait requires two methods to be implemented.
 
-`fill_buf` should fill the internal buffer of the object, returning the buffer contents upon success. `buf.consume(amt)` tells the buffer that `amt` bytes have been consumed from the internal buffer, thus should no longer be returned be suceeding `read`ings. These two functions are relatively low-level and should be used in pair.
+`fill_buf` should fill the internal buffer of the object, returning the buffer contents upon success. `buf.consume(amt)` tells the buffer that `amt` bytes have been consumed from the internal buffer, thus should no longer be returned be succeeding `read`ings. These two functions are relatively low-level and should be used in pair.
 
 With these two methods implemented, the trait provides some high-level utility methods for daily use:
 
@@ -425,7 +425,7 @@ fn read_until<R>(r: &mut R, delim: u8, buf: &mut Vec<u8>) -> Result<usize> {
 }
 ```
 
-The function also demonstrates the usage of `fill_buf` and `consume`. The function calls `r.fill_buf` inside a loop to fill the internal buffer of `r` and returns a reference of it (`available`) if the operation succeed. It then uses the extremely fast `memchr::memchr` to find the delimiter `delim` in `available`. If found, the bytes from the start to the undex of delimiter in the internal buffer would be consumed and appended into the target buffer. If not, all the bytes in the internal buffer would be consumed into the target buffer. Depending on whether the delimiter has been found or EOF has been reached (indicated by 0 bytes available in the internal buffer), the function would jump out of the loop and return the total bytes read.
+The function also demonstrates the usage of `fill_buf` and `consume`. The function calls `r.fill_buf` inside a loop to fill the internal buffer of `r` and returns a reference of it (`available`) if the operation succeed. It then uses the extremely fast `memchr::memchr` to find the delimiter `delim` in `available`. If found, the bytes from the start to the index of delimiter in the internal buffer would be consumed and appended into the target buffer. If not, all the bytes in the internal buffer would be consumed into the target buffer. Depending on whether the delimiter has been found or EOF has been reached (indicated by 0 bytes available in the internal buffer), the function would jump out of the loop and return the total bytes read.
 
 Additionally, the trait provides:
 
@@ -439,7 +439,7 @@ pub trait BufRead {
 
 which would attempt to read all bytes until a newline character (`0xa` byte) is reached. The bytes read would be appended to the provided `String` buffer if they form valid UTF8.
 
-Internally, it makes use of the `append_to_string` function, which was introduced above. Now we've uncovered the reason of this function's signature design: reduce code dulplication.
+Internally, it makes use of the `append_to_string` function, which was introduced above. Now we've uncovered the reason of this function's signature design: reduce code duplication.
 
 The trait also provides
 
@@ -482,7 +482,7 @@ impl<B: BufRead> Iterator for Split<B> {
 
 Note that the iterator yields a `Result<Vec<u8>>`, meaning that the last `Err` encountered will be propagated and returned to the caller of the trait.
 
-Finally, the tarit provides
+Finally, the trait provides
 
 ```ignore
 pub trait BufRead {
@@ -527,7 +527,7 @@ Note that it uses an additional `if` to deal with `/r`.
 
 # Buffered IO
 
-IO often requiers a lot of interaction with some sort of "external device", which might be really inefficient. As such, buffering is commonly used to help reduce the overhead. To capture this pattern, besides the `BufRead` trait, the module also provides three wrapper structs.
+IO often requires a lot of interaction with some sort of "external device", which might be really inefficient. As such, buffering is commonly used to help reduce the overhead. To capture this pattern, besides the `BufRead` trait, the module also provides three wrapper structs.
 
 ## BufReader
 
@@ -797,7 +797,7 @@ impl<W: Write> BufWriter<W> {
 
 Note that unlike `BufReader`, the `into_inner` method of `BufWriter` actually *does* try to flush the buffered content into `inner`. If the flushing fails, the value of `BufWriter` as well as the failing `Error` would be returned inside an `IntoInnerError`. Also note that this method is the reason why `BufWriter<T>` wraps around an `Option<T>` (rather than simply wrapping `T`). Unlike `BufReader<T>`, `BufWriter` implements `Drop`. As such, it is not allowed to directly move the value of its field out.[^1] Thus another layer of wrapping.
 
-[^1]: To get a furthur explanation check out [The Rustonomicon](https://doc.rust-lang.org/nomicon/destructors.html).
+[^1]: To get a further explanation check out [The Rustonomicon](https://doc.rust-lang.org/nomicon/destructors.html).
 
 Also note that the wrapper implements `Debug` if the underlying writer implements `Debug`.
 
@@ -850,7 +850,7 @@ impl<W: Write> Write for LineWriter<W> {
 
 It also implements `Debug` if the underlying writer implements it.
 
-# Special Adaptors
+# Special Adapters
 
 The module also provides some special reader/writers.
 
@@ -1026,7 +1026,7 @@ pub struct Stdin { /* fields omitted */ }
 
 This struct represents a handle to the standard input stream of the process. The handle can be considered as a shared reference to the actual underlying input buffer of the process. Accessing the underlying buffer through this handle is synchronized via a mutex.
 
-To provide such a handle the module exploses a function
+To provide such a handle the module exposes a function
 
 ```ignore
 pub fn stdin() -> Stdin { /*...*/ }
@@ -1040,7 +1040,7 @@ impl Stdin {
 }
 ```
 
-for convinient line-based reading.
+for convenient line-based reading.
 
 ### StdinLock
 
@@ -1114,7 +1114,7 @@ In addition, the module also provides
     The function tries to read the entire contents of a reader and writes it into another reader.
 
 - `prelude` submodule
-    `std::io` has a bunch of stuff defined. To alleviate importing many common IO traits, this submodule imports the core traits of `io`. Concepturally, it is defined as
+    `std::io` has a bunch of stuff defined. To alleviate importing many common IO traits, this submodule imports the core traits of `io`. Conceptually, it is defined as
     ```ignore
     pub mod prelude {
         pub use super::Read;

@@ -19,3 +19,4 @@
     * [std::fs](fs-readme.md)
     * [std::hash](hash-readme.md)
     * [std::io](io-readme.md)
+    * [std::iter](iter-readme.md)

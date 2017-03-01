@@ -138,7 +138,7 @@ pub trait Into<T>: Sized {
 }
 ```
 
-The `Into<T>` trait constrcts a `T` from a `self: Self`.
+The `Into<T>` trait constructs a `T` from a `self: Self`.
 
 Note that the module also defines the following generic implementations:
 

@@ -68,7 +68,7 @@ pub trait PartialOrd<Rhs: ?Sized = Self> : PartialEq<Rhs> {
 }
 ```
 
-Note that only the `partial_cmp` method needs to be implemented, the actual operator-methods is default generized using this method.
+Note that only the `partial_cmp` method needs to be implemented, the actual operator-methods is default generalized using this method.
 
 The method returns an `Option<Ordering>`, where `Ordering` is defined as:
 
@@ -103,9 +103,9 @@ pub trait Ord: Eq + PartialOrd<Self> {
 
 for [total order](https://en.wikipedia.org/wiki/Total_order). This means that, for all values in the implementing type: exactly one of `a<b`, `a==b` or `a>b` can be true; and that `a<b` and `b<c` implies `a<c`, the same goes for both `==` and `>`.
 
-This property is also reflected in the requierd method `cmp`: it returns an `Ordering`, instead of an `Option<Ordering` as in the case of `PartialOrd<Self>`.
+This property is also reflected in the required method `cmp`: it returns an `Ordering`, instead of an `Option<Ordering` as in the case of `PartialOrd<Self>`.
 
-A common trick can be used when implementing `Ord`: as the trait implies a total order, when implementing `PartialOrd<Self>` for supplimentary, the `partial_cmp` method can directly calls into `cmp` to avoid duplicated typing. For example,
+A common trick can be used when implementing `Ord`: as the trait implies a total order, when implementing `PartialOrd<Self>` for supplementary, the `partial_cmp` method can directly calls into `cmp` to avoid duplicated typing. For example,
 
 ```rust
 #[derive(Eq)]

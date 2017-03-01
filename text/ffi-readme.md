@@ -111,7 +111,7 @@ These methods consumes `self` by value, returning the corresponding type.
 
 `into_raw` transfers the ownership of the string to the returned pointer. Note that deallocation must be done on another `CString` which is reconstructed via `from_raw` with the returned pointer. Specifically, one should *not* use the standard C `free` function to deallocate it.
 
-`into_string` trys to convert the `CString` into `String` and returns it. On failure due to invalid unicode, ownership of the original `CString` is returned in the `Err` variant `IntoStringError`'s `inner` field.
+`into_string` tries to convert the `CString` into `String` and returns it. On failure due to invalid unicode, ownership of the original `CString` is returned in the `Err` variant `IntoStringError`'s `inner` field.
 
 `into_bytes` returns the underlying byte buffer as a byte vector, with C-string's trailing `0u8` removed.
 
@@ -132,7 +132,7 @@ pub fn as_bytes_with_nul(&self) -> &[u8] {
 }
 ```
 
-Besides the above two methods to achive borrowing, the module also defines another new type, `CStr` to represent a borrowed C string. The relation is analoge to that between `String` and `str`:
+Besides the above two methods to achieve borrowing, the module also defines another new type, `CStr` to represent a borrowed C string. The relation is analogue to that between `String` and `str`:
 
 ```ignore
 pub struct CStr {

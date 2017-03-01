@@ -15,7 +15,7 @@ pub trait Hasher {
 
 The trait requires the above two methods to be implemented. `write` writes some input into the `Hasher`. Such writing can be accumulated, until a `finish` is invoked, yielding the final hashed value of the preceding data stream, as a `u64`.
 
-With the `write` method defined, the trait provides implementations for writing numeric type datas:
+With the `write` method defined, the trait provides implementations for writing numeric type data:
 
 ```ignore
 pub trait Hasher {
@@ -49,9 +49,9 @@ pub trait Hash {
 }
 ```
 
-The required method `hash` should be implemented such that, given a hashing function object `state`, the value of the object is written into it. One can also use the `#[derive]` attribute with this trait to implement an default hashing strategy, if all fields of the type imeplement `Hash`. The resulting hash will be the combination of calling `hash` on each field. Most of the primitive types implements `Hash`.
+The required method `hash` should be implemented such that, given a hashing function object `state`, the value of the object is written into it. One can also use the `#[derive]` attribute with this trait to implement an default hashing strategy, if all fields of the type implement `Hash`. The resulting hash will be the combination of calling `hash` on each field. Most of the primitive types implements `Hash`.
 
-The defaultly implemented method `hash_slice` hashes a slice of `Self`.
+The default-implemented method `hash_slice` hashes a slice of `Self`.
 
 Most of the primitive types and a lot of other types in the `std` implement `Hash`.
 

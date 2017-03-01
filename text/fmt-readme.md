@@ -80,7 +80,7 @@ format!("{:b}", 10); // => "1010"
 
 ## Additional Specifications
 
-After the `:` and before the type specification, additional formatting specifications can be used. Firt comes the width:
+After the `:` and before the type specification, additional formatting specifications can be used. First comes the width:
 
 ```rust
 format!("{:2x}", 10); // => " a"
@@ -119,21 +119,21 @@ For numeric types, additional specifications can be inserted between padding spe
     - `#X` precedes with `0x`
     - `#b` precedes with `0b`
     - `#o` precedes with `0o`
-- `0` indicates that integer padding should both be done with `0` as well as be sign-aware. Thuse, `format!({:03}, 1)` yields `"001`; `format!({:03}, -1)` yields `-01`.
+- `0` indicates that integer padding should both be done with `0` as well as be sign-aware. Thus, `format!({:03}, 1)` yields `"001`; `format!({:03}, -1)` yields `-01`.
 
 
-For non-numeric types, after the width specification, an `.precision` can be used to specify the "maximum width" of the formatted string. Longer results would be truncated. For integer types, this is ignored. For floating-point types, this indicates how many digits after thte decimal points should be printed.
+For non-numeric types, after the width specification, an `.precision` can be used to specify the "maximum width" of the formatted string. Longer results would be truncated. For integer types, this is ignored. For floating-point types, this indicates how many digits after the decimal points should be printed.
 
 To specify the `precision`, one can use:
 - An integer
-- An indiced/named argument, preceding with `$`(just like the width specification)
+- An indexed/named argument, preceding with `$`(just like the width specification)
 - An asterisk(`.*`). This will consume two argument slots. The first input should be of type `usize`, representing the precision; the second input should be the actual argument to be printed with this precision.
 
 That's all about syntax. Next we are going to cover how to format custom defined types.
 
 # Formatter
 
-Before directly diving into the forming traits, however, we should take a look at the `Formatter` struct first, as this is the key component of custom type formattting.
+Before directly diving into the forming traits, however, we should take a look at the `Formatter` struct first, as this is the key component of custom type formatting.
 
 Every formatting traits defines a `fmt` method which takes a `&mut Formatter` as an argument. When a trait is implemented, the implementing type can then be used as the corresponding type during formatting.
 

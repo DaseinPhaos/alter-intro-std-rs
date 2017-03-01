@@ -278,13 +278,13 @@ impl<'b> Clone for BorrowRef<'b> {
 
 It turns out that this type is simply just a wrapper around a reference to a celled flag.
 
-The associated `new` method is somewhat unusual as it returns an `Option` (instead of `Self` as what we'd normally expect). internally, it determines if the flag presented is `WRITING`(indicating an immutable borrow is active). If it is, the method returns `None` indicating borrowing failure; it not, it returns a `Some` with the referenced flag count increnmented (indicating another immutable borrow has been activated).
+The associated `new` method is somewhat unusual as it returns an `Option` (instead of `Self` as what we'd normally expect). internally, it determines if the flag presented is `WRITING`(indicating an immutable borrow is active). If it is, the method returns `None` indicating borrowing failure; it not, it returns a `Some` with the referenced flag count incremented (indicating another immutable borrow has been activated).
 
 The `Drop` trait's `drop` method, on the contrary, decrements the referenced flag count, indicating that current immutable borrow has gone out of scope.
 
 The `Clone` implementation by now should appears to be trivial.
 
-This addtional layer of abstraction allows the following method to be implemented:
+This additional layer of abstraction allows the following method to be implemented:
 
 ```ignore
 impl<'b, T: ?Sized> Ref<'b, T> {

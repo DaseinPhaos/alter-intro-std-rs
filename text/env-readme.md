@@ -4,7 +4,7 @@
 
 This module defines some functions inspecting and manipulating the environment of the running process.
 
-The "environment" here includes aspects such as environment argments, current directory, command line arguments and so on.
+The "environment" here includes aspects such as environment arguments, current directory, command line arguments and so on.
 
 It also contains a submodule `const` which defines some constant values specifically associated with the current building target.
 
@@ -28,9 +28,9 @@ pub fn args() -> Args {
 
 These two functions both return an iterator over the arguments the program started with (these arguments are normally passed via command line, thus also called command line arguments in this case).
 
-The first function, `arg_os` returns an iterator yielding these arguments as `StringOs`, while the `args` method returns iterator yielding `String`. As such, the `Args` iterator might panic if the process's argments contain invalid unicode codepoints. If this is not desired, the `args_os` method should be preferred.
+The first function, `arg_os` returns an iterator yielding these arguments as `StringOs`, while the `args` method returns iterator yielding `String`. As such, the `Args` iterator might panic if the process's arguments contain invalid unicode codepoints. If this is not desired, the `args_os` method should be preferred.
 
-Note that during the construction of `ArgsOs`, a module `sys` is used. This module is hidden from users of the standard library, as it is considered to be an implementation detail. We won't dig into it here, but interested readers can refer to the [source code of libstd](https://github.com/rust-lang/rust/tree/master/src/libstd/sys).
+Note that during the construction of `ArgsOs`, a module `sys` is used. This module is hidden from users of the standard library, as it is considered to be an implementation detail. We won't dig into it here, but interested readers can refer to the [source code of `libstd`](https://github.com/rust-lang/rust/tree/master/src/libstd/sys).
 
 Let's check out the definitions of these iterator structs. Firstly the `ArgsOs`:
 
@@ -50,7 +50,7 @@ Naturally, the type also implements `iterator`, `ExactSizeIterator` and `DoubleE
 
 # Environment Variables
 
-Similarly, we have two functions to retrive environment Variables:
+Similarly, we have two functions to retrieve environment Variables:
 
 ```ignore
 pub fn vars_os() -> VarsOs {
@@ -136,7 +136,7 @@ Also note that these methods delegate the real work to their underscore-prefixed
 
 # Directories
 
-Next, we have a set of methods for some specific directorys.
+Next, we have a set of methods for some specific directories.
 
 `current_dir` and `set_current_dir` deal with the current working directory of the process:
 
@@ -191,7 +191,7 @@ On Windows systems, it returns the value of `TMP`, `TEMP` or `USERPROFILE` ev, i
 
 # PATH
 
-Finally, for the `PATH` environment variable, we have two additional functions. Either on Unix or on Windows systems, this environment variable has a special meaning of specifying the universally directly callable binaries' directories. However, the separating strategies of these pathes are not identical across platforms. As such, the standard library provides the following two functuons for `PATH` ev manipulation:
+Finally, for the `PATH` environment variable, we have two additional functions. Either on Unix or on Windows systems, this environment variable has a special meaning of specifying the universally directly callable binaries' directories. However, the separating strategies of these paths are not identical across platforms. As such, the standard library provides the following two functions for `PATH` ev manipulation:
 
 ```ignore
 pub fn split_paths<T>(unparsed: &T) -> SplitPaths
@@ -227,15 +227,15 @@ pub fn join_paths<I, T>(paths: I) -> Result<OsString, JoinPathsError>
 }
 ```
 
-It joins a collection of `paths` for the `PATH` ev, returning an `OsString` on success. If one of the input `Path`s contains invalid chracter for contructing the value of a `PATH` variable( dobule quote on Windows, colon on Unix), the function returns an `Err`.
+It joins a collection of `paths` for the `PATH` ev, returning an `OsString` on success. If one of the input `Path`s contains invalid character for constructing the value of a `PATH` variable( double quote on Windows, colon on Unix), the function returns an `Err`.
 
 # Constants
 
 The module also contains a submodule, `const`, which contains some constants associated with the current building target.
 
-The provided infomation include:
+The provided information include:
 
-* `ARCH: &'static str`: A string describing the architecture of the CPU that is currently in use. Possible values include "x86", "x86_64", "arm", "aarch64", "mips", "mips64", "powerpc", "powerpc64", etc.
+* `ARCH: &'static str`: A string describing the architecture of the CPU that is currently in use. Possible values include "x86", "x86_64", "arm", "arch64", "mips", "mips64", "powerpc", "powerpc64", etc.
 * `FAMILIY: &'static str`: A string describing the family of the OS. Possible values include "unix", "windows".
 * `OS: &'static str`: A string describing the specific OS. Possible values include "linux", "macos", "ios", "freebsd", "android", "windows".
 * `DLL_PREFIX: &'static str`: A string specifying the filename prefix used for shared libraries on the platform. Possible values include "lib", ""(an empty string).

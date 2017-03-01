@@ -128,7 +128,7 @@ let cloned_string = oh.to_owned();
 # }
 ```
 
-Now we are happy. To conclude, `ToOwned` trait extends the concept of cloning to the generalized borrowing senario. If `T: ToOwned<Owned=U>`, then a `& T`, being borrowed from some `& U`, can make a clone of what it's borrowing by calling `to_owned` on itself.[^silly]
+Now we are happy. To conclude, `ToOwned` trait extends the concept of cloning to the generalized borrowing scenario. If `T: ToOwned<Owned=U>`, then a `& T`, being borrowed from some `& U`, can make a clone of what it's borrowing by calling `to_owned` on itself.[^silly]
 
 [^silly]: The example here is pretty silly though, as one can simply reuse `String::from(oh)` instead.
 
@@ -188,7 +188,7 @@ println!("{}", cow);
 
 . As such, it's just pointing into something owned by others. However, when mutability is required, it would by then lazily perform `B: ToOwned`'s `to_owned` method, changing its content to the `Owned(..)` variant.
 
-When `to_mut` method is invoked, the lazy clone(actually `to_owned`) would be performed(if not already), and a mutable reference to the newly cloned data would be returned. When `into_owned` is invoked, the invoking `Cow` would be consumed, returning the newly cloned(if not already) data by value. Continueing the example above, say if we want to change the content of the newly created `cow`:
+When `to_mut` method is invoked, the lazy clone(actually `to_owned`) would be performed(if not already), and a mutable reference to the newly cloned data would be returned. When `into_owned` is invoked, the invoking `Cow` would be consumed, returning the newly cloned(if not already) data by value. Continuing the example above, say if we want to change the content of the newly created `cow`:
 
 ```rust
 # fn main() {
