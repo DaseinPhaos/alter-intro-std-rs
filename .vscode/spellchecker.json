@@ -56,7 +56,8 @@
         "unix",
         "utf8",
         "inline",
-        "predicat"
+        "predicat",
+        "usua"
     ],
     "documentTypes": [
         "markdown",

@@ -534,3 +534,420 @@ impl<I: Iterator> Iterator for Peekable<I> {
     }
 }
 ```
+
+---
+
+```ignore
+pub trait Iterator {
+    fn skip_while<P>(self, predicate: P) -> SkipWhile<Self, P>
+        where Self: Sized, P: FnMut(&Self::Item) -> bool
+    {
+        SkipWhile{ iter: self, flag: false, predicate: predicate }
+    }
+}
+```
+
+This method returns an adapter that skips through the original iterator's yielding items until an invocation to the predicate returns `false`. After that, *every* succeeding element would be returned as is. The predicate would by then be done for. This is where this method differs from a negative `filter`.
+
+The returned adapter is defined as follows:
+
+```ignore
+pub struct SkipWhile<I, P> {
+    iter: I,
+    flag: bool,
+    predicate: P,
+}
+
+impl<I: Iterator, P> Iterator for SkipWhile<I, P>
+    where P: FnMut(&I::Item) -> bool
+{
+    type Item = I::Item;
+
+    #[inline]
+    fn next(&mut self) -> Option<I::Item> {
+        for x in self.iter.by_ref() {
+            if self.flag || !(self.predicate)(&x) {
+                self.flag = true;
+                return Some(x);
+            }
+        }
+        None
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize) {
+        let (_, upper) = self.iter.size_hint();
+        (0, upper) // lower bound can't be trusted due to skipping
+    }
+}
+```
+
+Note that unlike most other adapters, this adapter doesn't persist a `ExactNumberAdapter` or `DoubleEndnedAdapter`.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn take_while<P>(self, predicate: P) -> TakeWhile<Self, P> { /* ... */}
+}
+```
+
+Creates an adapter that yields original iterator's elements until the `predicate` when applying on the element, returns a `false`. This is quiet the opposite of `skip_while`. We omit implementation details here.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn skip(self, n: usize) -> Skip<Self> { /* ... */}
+}
+```
+
+Creates an adapter that skips the next `n` elements of the original iterator.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn take(self, n: usize) -> Take<Self> { /* ... */}
+}
+```
+
+Creates an adapter that only takes the next `n` elements of the original iterator.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn scan<St, B, F>(self, initial_state: St, f: F) -> Scan<Self, St, F>
+        where Self: Sized, F: FnMut(&mut St, Self::Item) -> Option<B>
+    {
+        Scan { iter: self, f: f, state: initial_state }
+    }
+}
+```
+
+Like `fold`, this method takes and accumulates a `state` object. Unlike `fold` which only returns the final result, `scan` here returns another iterator adapter, yielding out some "intermediate results" upon every iteration of the original iterator.
+
+The definition of the returned structure is as follows:
+
+```ignore
+pub struct Scan<I, St, F> {
+    iter: I,
+    f: F,
+    state: St,
+}
+
+impl<B, I, St, F> Iterator for Scan<I, St, F>
+    where I: Iterator,
+          F: FnMut(&mut St, I::Item) -> Option<B>
+{
+    type Item = B;
+
+    #[inline]
+    fn next(&mut self) -> Option<B> {
+        self.iter.next().and_then(|a| (self.f)(&mut self.state, a))
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let (_, upper) = self.iter.size_hint();
+        (0, upper)
+    }
+}
+```
+
+Note from the implementation that, the adapter can terminate when:
+
+- original iterator terminates,
+- scanning function decides that it should return `None`.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn flat_map<U, F>(self, f: F) -> FlatMap<Self, U, F>
+        where Self: Sized, U: IntoIterator, F: FnMut(Self::Item) -> U,
+    {
+        FlatMap { iter: self, f: f, frontiter: None, backiter: None }
+    }
+}
+```
+
+Creates a "flattened mapping". While `map` is certainly helpful, for deeply nested data, it can't do much.
+
+Say we are to total number of `'a'`'s in a collection of strings. This method captures such need precisely and efficiently:
+
+```rust
+let words = ["alpha", "beta", "gamma"];
+let count_a = words.iter().flat_map(|s| s.chars()) // Now a iterator over all characters
+    .filter(|c| *c=='a').count();
+assert_eq!(count_a, 5);
+```
+
+Let's take a look at how this is implemented:
+
+```ignore
+pub struct FlatMap<I, U: IntoIterator, F> {
+    iter: I,
+    f: F,
+    frontiter: Option<U::IntoIter>,
+    backiter: Option<U::IntoIter>, // for double ended iterators
+}
+
+impl<I: Iterator, U: IntoIterator, F> Iterator for FlatMap<I, U, F>
+    where F: FnMut(I::Item) -> U
+{
+    type Item = U::Item;
+
+    #[inline]
+    fn next(&mut self) -> Option<U::Item> {
+        loop {
+            if let Some(ref mut inner) = self.frontiter {
+                if let Some(x) = inner.by_ref().next() {
+                    return Some(x)
+                }
+            }
+            match self.iter.next().map(&mut self.f) {
+                None => return self.backiter.as_mut().and_then(|it| it.next()),
+                next => self.frontiter = next.map(IntoIterator::into_iter),
+            }
+        }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let (flo, fhi) = self.froniter.as_ref().map_or(0, Some(0)), |it| it.size_hint());
+        let (blo, bhi) = self.backiter.as_ref().map_or(0, Some(0)), |it| it.size_hint());
+        let lo = flo.saturating_add(blo);
+        match (self.iter.size_hint(), fhi, bhi) {
+            (0, Some(0), Some(a), Some(b)) => (lo, a.checked_add(b)),
+            _ => (lo, None)
+        }
+    }
+}
+```
+
+Note that to support `DoubleEndedIterator`s, the structure adds some additional checking, which would otherwise be redundant. I think when specialization kicks in `stable` this tiny overhead should be gone.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn fuse(self) -> Fuse<Self> {/* ... */}
+}
+```
+
+The `Iterator` trait allows its implementation to somewhat resume iterating after yielding a `None` item. For those that once returned `None` always returning `None` from then on, the module provides another wrapper trait, `FusedIterator`. Currently it is unstable, however this method do let us create such a iterator adapter that implements it.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn inspect<F>(self, f: F) -> Inspect<Self, F>
+        where Self: Sized, F: FnMut(&Self::Item) { /* ... */ }
+}
+```
+
+Creates an adapter inspects the original iterator's elements with `f: F`, and passing the value on.
+
+When working with iterators, usually we'd have to do a lot of chaining. This is where inspection gets useful.
+
+Continuing with our last example, we can now add some inspections:
+
+```rust
+let words = ["alpha", "beta", "gamma"];
+let count_a = words.iter()
+    .inspect(|s| println!("before flat mapping: {}", s))
+    .flat_map(|s| s.chars()) // Now a iterator over all characters
+    .inspect(|c| println!("before filtering: {}", c))
+    .filter(|c| *c=='a')
+    .inspect(|c| println!("after filtering: {}", c))
+    .count();
+assert_eq!(count_a, 5);
+```
+
+---
+
+```ignore
+pub trait Iterator {
+    fn by_ref(&mut self) -> &mut Self { /* ... */ }
+}
+```
+
+Borrows the iterator by **mutable** reference. Note that naming convention of rust methods is violated here. This method is useful with adapter chaining, when we don't want the original iterator to be consumed.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn collect<B>(self) -> B where B: FromIterator { /* ... */ }
+}
+```
+
+Collects all the items of the iterator into a `B: FromIterator`. Such a `B` is often some sort of collections:
+
+```ignore
+pub trait FromIterator<A> {
+    fn from_iter<T>(iter: T) -> Self
+        where T: IntoIterator<Item=A>;
+}
+```
+
+---
+
+```ignore
+pub trait Iterator {
+    fn partition<B, F>(self, mut f: F) -> (B, B)
+        where Self: Sized,
+              B: Default + Extend<Self::Item>,
+              F: FnMut(&Self::Item) -> bool
+    {
+        let mut left: B = Default::default();
+        let mut right: B = Default::default();
+        for x in self {
+            if f(&x) {
+                let.extend(Some(x))
+            } else {
+                right.extend(Some(x))
+            }
+        }
+        (left, right)
+    }
+}
+```
+
+Consumes the iterator, and creates two collections from it according to the given predicate.
+
+The collection type should be `Default` constructible, and `Extend`able over the item type.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn all<F>(&mut self, mut f: F) -> bool
+        where Self: Sized, // for taking by value
+              F: FnMut(Self::Item) -> bool
+    {
+        for x in self {
+            if !f(x) {
+                return false;
+            }
+        }
+        true
+    }
+
+    fn any<F>(&mut self, mut f: F) -> bool
+        where Self: Sized,
+              F: FmMut(Self::Item) -> bool
+    {
+        for x in self {
+            if f(x) {
+                return true;
+            }
+        }
+        false
+    }
+}
+```
+
+These two are straightforward.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn find<F>(&mut self, mut f: F) -> Option<Self::Item>
+        where Self: Sized,
+              P: FnMut(&Self::Item) -> bool
+    {
+        for x in self {
+            if f(&x) { return Some(x) }
+        }
+        None
+    }
+}
+```
+
+Returns the first item matching the predicate, if any.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn position<P>(&mut self, mut predicate: P) -> Option<usize>
+        where Self: Sized,
+              P: FnMut(Self::Item) -> bool,
+    {
+        // `enumerate` might overflow.
+        for (i, x) in self.enumerate() {
+            if predicate(x) {
+                return Some(i);
+            }
+        }
+        None
+    }
+}
+```
+
+Returns the index ( from the current position) of the first item matching the predicate. Now that this predicate consumes items by value, unlike the one used by `find`.
+
+---
+
+For `ExactSizedIterator` and `DoubleEndedIterator`, we also have:
+
+```ignore
+pub trait Iterator {
+    fn rposition<P>(&mut self, mut predicate: P) -> Option<usize>
+        where P: FnMut(Self::Item) -> bool,
+              Self: Sized + ExactSizeIterator + DoubleEndedIterator
+    {
+        let mut i = self.len();
+
+        while let Some(v) = self.next_back() {
+            if predicate(v) {
+                return Some(i - 1);
+            }
+            // No need for an overflow check here, because `ExactSizeIterator`
+            // implies that the number of elements fits into a `usize`.
+            i -= 1;
+        }
+        None
+    }
+}
+```
+
+---
+
+For ordered item types, we also have:
+
+```ignore
+pub trait Iterator {
+    fn max(self) -> Option<Self::Item>
+        where Self: Sized,
+              Self::Item: Ord
+    {
+        // ...
+    }
+
+    fn min(self) -> Option<Self::Item>
+        where Self: Sized,
+              Self::Item: Ord
+    {
+        // ...
+    }
+}
+```
+
+These functions returns the value closest to the current position of the iterator, among equally `max`/`min`s.
+
+Additionally, we have:
+
+```ignore
+pub trait Iterator {
+    fn max_by_key<B, F>(self, f: F) -> Option<Self::Item>
+        where B: Ord,
+              F: FnMut(&Self::Item) -> B { ... }
+    fn max_by<F>(self, compare: F) -> Option<Self::Item> where F: FnMut(&Self::Item, &Self::Item) -> Ordering { ... }
+    fn min_by_key<B, F>(self, f: F) -> Option<Self::Item> where B: Ord, F: FnMut(&Self::Item) -> B { ... }
+    fn min_by<F>(self, compare: F) -> Option<Self::Item> where F: FnMut(&Self::Item, &Self::Item) -> Ordering { ... }
+}
