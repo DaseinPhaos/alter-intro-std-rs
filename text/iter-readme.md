@@ -17,11 +17,11 @@ pub trait Iterator {
 
 The required associated type, `Item`, represents the type of elements that this iterator is to iterate over.
 
-The required `next` method defines the actual mechanism of iteration. Every invocation of it means another round of iteration. It returns an `Option<Item>`. If the returned value is a `Some`, that element is the result of this round of iteration. Returning a `None`, on the other hand, means that the iterator has finished this round of iteration. Due to the actual implementation, the iterator is permitted to resume iteration after such `None` is returned. Subsequent calls to `next` *can* start returning `Some` again at some point. How to evaluate the returned value is up to the implementation itself. However, the general philosophy of iterator implementation is to apply some form of "lazy evaluation", that is, we don't perform any evaluation unless we have to.
+The required `next` method defines the actual mechanism of iteration. Every invocation of it means another round of iteration. It returns an `Option<Item>`. If the returned value is a `Some`, that element is the result of this round of iteration. Returning a `None`, on the other hand, means that the iterator has finished the whole iteration process. The iterator is permitted to resume iteration after such a `None` is returned, however. Subsequent calls to `next` *can* start returning `Some` again at some point. it is up to the implementation to decide how the returned value should be obtained. However, the general philosophy of iterators is to apply some sort of "lazy evaluation", that is, we don't perform any evaluation unless we have to.
 
-The module also defines some other more specific kinds of iterator-trait on top of this trait. This trait itself also has a bunch of default methods for utility usage. Lots of these methods deal with iterator composition, the module also contains corresponding generic struct definitions for composited iterators. We will come to these definitions later in this post.
+The module also defines some other more specific kinds of iterators on top of this trait. This trait itself also has a bunch of default methods for utility usage. Lots of these methods deal with iterator composition, the module also contains corresponding generic struct definitions for composited iterators (aka. adapters). We will come to these definitions later in this post.
 
-For now let's just check out how to make a simple iterator:
+For now let's just check out how to define a simple iterator:
 
 ```rust
 struct EvenNums {
