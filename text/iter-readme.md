@@ -918,7 +918,7 @@ pub trait Iterator {
 
 ---
 
-For ordered item types, we also have:
+For ordered item types, we have:
 
 ```ignore
 pub trait Iterator {
@@ -951,3 +951,259 @@ pub trait Iterator {
     fn min_by_key<B, F>(self, f: F) -> Option<Self::Item> where B: Ord, F: FnMut(&Self::Item) -> B { ... }
     fn min_by<F>(self, compare: F) -> Option<Self::Item> where F: FnMut(&Self::Item, &Self::Item) -> Ordering { ... }
 }
+```
+
+that can cooperate with customized ordering functions.
+
+---
+
+For `DoubleEndedIterator`s, we have a reverse adapter:
+
+```ignore
+pub trait Iterator {
+    fn rev(self) -> Rev<Self>
+        where Self: Sized + DoubleEndedIterator
+    { Rev {iter: self} }
+}
+```
+
+---
+
+For a "zipped" iterator, we can unzip them into separate collections:
+
+```ignore
+pub trait Iterator {
+    fn uzip<A, B, FromA, FromB>(self) -> (FromA, FromB)
+        where FromA: Default + Extend<A>,
+              FromB: Default + Extend<B>,
+              Self: Sized + Iterator<Item=(A, B)>,
+    {
+        let mut as: FromA = Default::default();
+        let mut bs: FromB = Default::default();
+
+        for(a, b) in self {
+            as.extend(Some(a)); // pattern matching here
+            bs.extend(Some(b));
+        }
+
+        (as, bs)
+    }
+}
+```
+
+---
+
+For an iterator that operates on some `& T`, where `T: Clone`, we have an adapter yielding each of its item `clone`d:
+
+```ignore
+fn cloned<'a, T>(self) -> Cloned<Self>
+    where Self: Sized + Iterator<Item=&'a T>,
+          T: Clone
+{
+    Cloned { it: self }
+}
+```
+
+The returned adapter is defined as
+
+```ignore
+pub struct Cloned<T> {
+    it: I,
+}
+
+impl<'a, I, T> Iterator for Cloned<T>
+    where I: Iterator<Item=&'a T>,
+          T: 'a + Clone
+{
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        self.it.next().cloned()
+    }
+     fn size_hint(&self) -> (usize, Option<usize>) {
+         self.it.size_hint()
+     }
+
+     fn fold<Acc, F>(self, init: Acc, mut f: F) -> Acc
+        where F: FnMut(Acc, Self::Item) -> Acc
+    {
+        self.it.fold(init, move |acc, elt| f(acc, elt.clone()))
+    }
+}
+```
+
+Note that the adapter has a customized version of `fold` implemented. This can be considered as an optimization, because when calling `fold` we presumes that we don't care about the intermediate items. However, this also means that if the `clone` method of `Item` has any kind of side-effects, they won't appear either (as one would reasonably assume) when calling `fold`.
+
+---
+
+```ignore
+pub trait Iterator {
+    fn cycle(self) -> Cycle<Self> where Self: Sized + Clone {
+        Cycle{orig: self.clone(), iter: self}
+    }
+}
+```
+
+Creates an adapter that, upon termination of the original iterator, *cycle*s the iteration process again. Looking into its implementation, we can see that it relies on the original iterator to be `Clone`able to achieve this.
+
+```ignore
+pub struct Cycle<I> {
+    orig: I,
+    iter: I,
+}
+
+impl<I> Iterator for Cycle<I> where I: Clone + Iterator {
+    type Item = <I as Iterator>::Item;
+
+    #[inline]
+    fn next(&mut self) -> Option<<I as Iterator>::Item> {
+        match self.iter.next() {
+            None => { self.iter = self.orig.clone(); self.iter.next() }
+            y => y
+        }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        // the cycle iterator is either empty or infinite
+        match self.orig.size_hint() {
+            sz @ (0, Some(0)) => sz,
+            (0, _) => (0, None),
+            _ => (usize::MAX, None)
+        }
+    }
+}
+```
+
+---
+
+For summable item types, we have
+
+```ignore
+pub trait Iterator {
+    fn sum<S>(self) -> S
+        where Self: Sized,
+              S: Sum<Self::Item>
+    {
+        Sum::sum(self)
+    }
+}
+```
+
+`Sum` here is a trait that represents a type that can be created by summing up another type:
+
+```ignore
+pub trait Sum<A = Self> {
+    fn sum<I>(iter: I) -> Self
+        where I: Iterator<Item=A>;
+}
+```
+
+The required method describes how the summing would be performed.
+
+For built-in numeric types (as well as their `Wrapping`s) this trait is implemented by `libstd`.
+
+---
+
+Similarly, we have
+
+```ignore
+pub trait Iterator {
+    fn product<P>(self) -> P
+        where Self: Sized,
+              P: Product<Self::Item>,
+    {
+        Product::product(self)
+    }
+}
+```
+
+where
+
+```ignore
+pub trait Product<A = Self> {
+    fn product<I>(iter: I) -> Self
+        where I: Iterator<Item=A>;
+}
+```
+
+to deal with products. The trait is also implemented properly for built-in numeric types.
+
+---
+
+Finally, for comparable item types, we have a bunch of methods to deal with lexicographical comparisons of iterators (actually comparing against their items):
+
+```ignore
+pub trait Iterator {
+    fn cmp<I>(self, other: I) -> Ordering where I: IntoIterator<Item=Self::Item>, Self::Item: Ord { ... }
+    fn partial_cmp<I>(self, other: I) -> Option<Ordering> where I: IntoIterator, Self::Item: PartialOrd<I::Item> { ... }
+    fn eq<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialEq<I::Item> { ... }
+    fn ne<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialEq<I::Item> { ... }
+    fn lt<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item> { ... }
+    fn le<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item> { ... }
+    fn gt<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item> { ... }
+    fn ge<I>(self, other: I) -> bool where I: IntoIterator, Self::Item: PartialOrd<I::Item> { ... }
+}
+```
+
+# Other iterators
+
+```ignore
+pub trait DoubleEndedIterator: Iterator {
+    fn next_back(&mut self) -> Option<Self::Item>;
+}
+
+pub trait ExactSizeIterator: Iterator {
+    #[inline]
+    fn len(&self) -> usize {
+        let (lower, upper) = self.size_hint();
+        // Note: This assertion is overly defensive, but it checks the invariant
+        // guaranteed by the trait. If this trait were rust-internal,
+        // we could use debug_assert!; assert_eq! will check all Rust user
+        // implementations too.
+        assert_eq!(upper, Some(lower));
+        lower
+    }
+
+    /// Returns whether the iterator is empty.
+    #[inline]
+    #[unstable(feature = "exact_size_is_empty", issue = "35428")]
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+#[unstable(feature = "fused", issue = "35602")]
+pub trait FusedIterator: Iterator {}
+
+#[unstable(feature = "trusted_len", issue = "37572")]
+pub unsafe trait TrustedLen : Iterator {}
+```
+
+TODO: introduce them a bit.
+
+# Utility Functions
+
+```ignore
+/// Creates an iterator that yields nothing.
+pub fn empty<T>() -> Empty<T> {
+    Empty(marker::PhantomData)
+}
+```
+
+```ignore
+/// Creates an iterator that yields an element exactly once.
+#[stable(feature = "iter_once", since = "1.2.0")]
+pub fn once<T>(value: T) -> Once<T> {
+    Once { inner: Some(value).into_iter() }
+}
+```
+
+```ignore
+/// Creates a new iterator that endlessly repeats a single element.
+#[inline]
+#[stable(feature = "rust1", since = "1.0.0")]
+pub fn repeat<T: Clone>(elt: T) -> Repeat<T> {
+    Repeat{element: elt}
+}
+```
