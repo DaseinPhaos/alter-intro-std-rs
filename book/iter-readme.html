@@ -97,11 +97,11 @@
 
 <p>The required associated type, <code>Item</code>, represents the type of elements that this iterator is to iterate over.</p>
 
-<p>The required <code>next</code> method defines the actual mechanism of iteration. Every invocation of it means another round of iteration. It returns an <code>Option&lt;Item&gt;</code>. If the returned value is a <code>Some</code>, that element is the result of this round of iteration. Returning a <code>None</code>, on the other hand, means that the iterator has finished this round of iteration. Due to the actual implementation, the iterator is permitted to resume iteration after such <code>None</code> is returned. Subsequent calls to <code>next</code> <em>can</em> start returning <code>Some</code> again at some point. How to evaluate the returned value is up to the implementation itself. However, the general philosophy of iterator implementation is to apply some form of &quot;lazy evaluation&quot;, that is, we don&#39;t perform any evaluation unless we have to.</p>
+<p>The required <code>next</code> method defines the actual mechanism of iteration. Every invocation of it means another round of iteration. It returns an <code>Option&lt;Item&gt;</code>. If the returned value is a <code>Some</code>, that element is the result of this round of iteration. Returning a <code>None</code>, on the other hand, means that the iterator has finished the whole iteration process. The iterator is permitted to resume iteration after such a <code>None</code> is returned, however. Subsequent calls to <code>next</code> <em>can</em> start returning <code>Some</code> again at some point. it is up to the implementation to decide how the returned value should be obtained. However, the general philosophy of iterators is to apply some sort of &quot;lazy evaluation&quot;, that is, we don&#39;t perform any evaluation unless we have to.</p>
 
-<p>The module also defines some other more specific kinds of iterator-trait on top of this trait. This trait itself also has a bunch of default methods for utility usage. Lots of these methods deal with iterator composition, the module also contains corresponding generic struct definitions for composited iterators. We will come to these definitions later in this post.</p>
+<p>The module also defines some other more specific kinds of iterators on top of this trait. This trait itself also has a bunch of default methods for utility usage. Lots of these methods deal with iterator composition, the module also contains corresponding generic struct definitions for composited iterators (aka. adapters). We will come to these definitions later in this post.</p>
 
-<p>For now let&#39;s just check out how to make a simple iterator:</p>
+<p>For now let&#39;s just check out how to define a simple iterator:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>struct</span> <span class='ident'>EvenNums</span> {
