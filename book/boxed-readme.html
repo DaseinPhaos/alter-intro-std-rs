@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -109,9 +111,9 @@
 
 <p>The <code>new</code> method allocates memory on the heap and places the <code>x</code> into it, then return the boxed <code>Box&lt;T&gt;</code>.</p>
 
-<p>Then <code>from_raw</code> method constructs a box from raw pointer <code>raw</code>. After calling, the pointee is owned by the resulting <code>Box</code>. This is considered as using raw pointer, thus the method is marked as <code>unsafe</code>. The only valid pointer to pass to this function is the one take from anohter <code>Box</code> via <code>Box::into_raw</code> function.</p>
+<p>Then <code>from_raw</code> method constructs a box from raw pointer <code>raw</code>. After calling, the pointee is owned by the resulting <code>Box</code>. This is considered as using raw pointer, thus the method is marked as <code>unsafe</code>. The only valid pointer to pass to this function is the one take from another <code>Box</code> via <code>Box::into_raw</code> function.</p>
 
-<p>The <code>into_raw</code> method, on the other hand, consumes the calling <code>Box</code>, and returns a raw pointer pointing to the calling data. The caller should be responsible for that memory after invoking this funcion. Note that this is an associated function. As such, the calling syntax should be <code>Box::into_raw(b)</code> instead of <code>b.into_raw()</code>. This is so that there is no conflict with methods of the inner type.</p>
+<p>The <code>into_raw</code> method, on the other hand, consumes the calling <code>Box</code>, and returns a raw pointer pointing to the calling data. The caller should be responsible for that memory after invoking this function. Note that this is an associated function. As such, the calling syntax should be <code>Box::into_raw(b)</code> instead of <code>b.into_raw()</code>. This is so that there is no conflict with methods of the inner type.</p>
 
 <p>Additionally, for <code>T: Any + &#39;static</code> (<code>+ Send</code>), the struct <code>Box&lt;T&gt;</code> also implements <code>downcast</code>.</p>
 

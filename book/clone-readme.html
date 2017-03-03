@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -92,7 +94,7 @@
 
 <p>The trait provides the ability to explicitly duplicate an object.</p>
 
-<p>While the <code>Copy</code> trait allows types to be implicitly copyed when assigning or passing by value; the trait only suits those types which are &quot;cheap&quot;(not large, don&#39;t require heap allocation) and &quot;safe&quot;(do not contain owned pointers or implement <code>Drop</code>) to copy.</p>
+<p>While the <code>Copy</code> trait allows types to be implicitly copied when assigning or passing by value; the trait only suits those types which are &quot;cheap&quot;(not large, don&#39;t require heap allocation) and &quot;safe&quot;(do not contain owned pointers or implement <code>Drop</code>) to copy.</p>
 
 <p>For other types, copies must be made explicitly, by convention implementing the <code>std::clone::Clone</code> trait and calling its <code>clone</code> method.</p>
 

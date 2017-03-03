@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -152,7 +154,7 @@
 <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:b}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot;1010&quot;</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aformat!(%22%7B%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%2210%22%0Aformat!(%22%7B%3Ao%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%2212%22%0Aformat!(%22%7B%3Ax%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%22a%22%0Aformat!(%22%7B%3AX%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%22A%22%0Aformat!(%22%7B%3Ab%7D%22%2C%2010)%3B%20%2F%2F%20%3D%3E%20%221010%22%0A%7D">Run</a></pre>
 
 <h2 id='additional-specifications' class='section-header'><a href='#additional-specifications'>Additional Specifications</a></h2>
-<p>After the <code>:</code> and before the type specification, additional formatting specifications can be used. Firt comes the width:</p>
+<p>After the <code>:</code> and before the type specification, additional formatting specifications can be used. First comes the width:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:2x}&quot;</span>, <span class='number'>10</span>); <span class='comment'>// =&gt; &quot; a&quot;</span>
@@ -191,20 +193,20 @@
 <li><code>#b</code> precedes with <code>0b</code></li>
 <li><code>#o</code> precedes with <code>0o</code></li>
 </ul></li>
-<li><code>0</code> indicates that integer padding should both be done with <code>0</code> as well as be sign-aware. Thuse, <code>format!({:03}, 1)</code> yields <code>&quot;001</code>; <code>format!({:03}, -1)</code> yields <code>-01</code>.</li>
+<li><code>0</code> indicates that integer padding should both be done with <code>0</code> as well as be sign-aware. Thus, <code>format!({:03}, 1)</code> yields <code>&quot;001</code>; <code>format!({:03}, -1)</code> yields <code>-01</code>.</li>
 </ul>
 
-<p>For non-numeric types, after the width specification, an <code>.precision</code> can be used to specify the &quot;maximum width&quot; of the formatted string. Longer results would be truncated. For integer types, this is ignored. For floating-point types, this indicates how many digits after thte decimal points should be printed.</p>
+<p>For non-numeric types, after the width specification, an <code>.precision</code> can be used to specify the &quot;maximum width&quot; of the formatted string. Longer results would be truncated. For integer types, this is ignored. For floating-point types, this indicates how many digits after the decimal points should be printed.</p>
 
 <p>To specify the <code>precision</code>, one can use:
 - An integer
-- An indiced/named argument, preceding with <code>$</code>(just like the width specification)
+- An indexed/named argument, preceding with <code>$</code>(just like the width specification)
 - An asterisk(<code>.*</code>). This will consume two argument slots. The first input should be of type <code>usize</code>, representing the precision; the second input should be the actual argument to be printed with this precision.</p>
 
 <p>That&#39;s all about syntax. Next we are going to cover how to format custom defined types.</p>
 
 <h1 id='formatter' class='section-header'><a href='#formatter'>Formatter</a></h1>
-<p>Before directly diving into the forming traits, however, we should take a look at the <code>Formatter</code> struct first, as this is the key component of custom type formattting.</p>
+<p>Before directly diving into the forming traits, however, we should take a look at the <code>Formatter</code> struct first, as this is the key component of custom type formatting.</p>
 
 <p>Every formatting traits defines a <code>fmt</code> method which takes a <code>&amp;mut Formatter</code> as an argument. When a trait is implemented, the implementing type can then be used as the corresponding type during formatting.</p>
 

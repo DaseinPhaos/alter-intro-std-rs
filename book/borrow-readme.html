@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -188,7 +190,7 @@
 <span class='kw'>let</span> <span class='ident'>cloned_string</span> <span class='op'>=</span> <span class='ident'>oh</span>.<span class='ident'>to_owned</span>();
 <span class='comment'>// Now we are happy.</span><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Alet%20some_string%20%3D%20String%3A%3Afrom(%22Oh%20Captain%22)%3B%0Alet%20oh%20%3D%20%26some_string%5B..2%5D%3B%0Alet%20cloned_string%20%3D%20oh.to_owned()%3B%0A%2F%2F%20Now%20we%20are%20happy.%0Aassert_eq!(cloned_string%2C%20%22Oh%22)%3B%0A%7D%0A">Run</a></pre>
 
-<p>Now we are happy. To conclude, <code>ToOwned</code> trait extends the concept of cloning to the generalized borrowing senario. If <code>T: ToOwned&lt;Owned=U&gt;</code>, then a <code>&amp; T</code>, being borrowed from some <code>&amp; U</code>, can make a clone of what it&#39;s borrowing by calling <code>to_owned</code> on itself.<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup></p>
+<p>Now we are happy. To conclude, <code>ToOwned</code> trait extends the concept of cloning to the generalized borrowing scenario. If <code>T: ToOwned&lt;Owned=U&gt;</code>, then a <code>&amp; T</code>, being borrowed from some <code>&amp; U</code>, can make a clone of what it&#39;s borrowing by calling <code>to_owned</code> on itself.<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup></p>
 
 <p>Note that the module implements <code>ToOwned&lt;Owned=T&gt;</code> for <code>T: Clone</code>. The implementation is trivial, as we&#39;d expect:</p>
 
@@ -243,7 +245,7 @@
 
 <p>. As such, it&#39;s just pointing into something owned by others. However, when mutability is required, it would by then lazily perform <code>B: ToOwned</code>&#39;s <code>to_owned</code> method, changing its content to the <code>Owned(..)</code> variant.</p>
 
-<p>When <code>to_mut</code> method is invoked, the lazy clone(actually <code>to_owned</code>) would be performed(if not already), and a mutable reference to the newly cloned data would be returned. When <code>into_owned</code> is invoked, the invoking <code>Cow</code> would be consumed, returning the newly cloned(if not already) data by value. Continueing the example above, say if we want to change the content of the newly created <code>cow</code>:</p>
+<p>When <code>to_mut</code> method is invoked, the lazy clone(actually <code>to_owned</code>) would be performed(if not already), and a mutable reference to the newly cloned data would be returned. When <code>into_owned</code> is invoked, the invoking <code>Cow</code> would be consumed, returning the newly cloned(if not already) data by value. Continuing the example above, say if we want to change the content of the newly created <code>cow</code>:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>cow</span> <span class='op'>=</span> <span class='ident'>cow</span>.<span class='ident'>into_owned</span>();

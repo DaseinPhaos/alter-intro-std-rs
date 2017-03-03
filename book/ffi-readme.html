@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -187,7 +189,7 @@
 
 <p><code>into_raw</code> transfers the ownership of the string to the returned pointer. Note that deallocation must be done on another <code>CString</code> which is reconstructed via <code>from_raw</code> with the returned pointer. Specifically, one should <em>not</em> use the standard C <code>free</code> function to deallocate it.</p>
 
-<p><code>into_string</code> trys to convert the <code>CString</code> into <code>String</code> and returns it. On failure due to invalid unicode, ownership of the original <code>CString</code> is returned in the <code>Err</code> variant <code>IntoStringError</code>&#39;s <code>inner</code> field.</p>
+<p><code>into_string</code> tries to convert the <code>CString</code> into <code>String</code> and returns it. On failure due to invalid unicode, ownership of the original <code>CString</code> is returned in the <code>Err</code> variant <code>IntoStringError</code>&#39;s <code>inner</code> field.</p>
 
 <p><code>into_bytes</code> returns the underlying byte buffer as a byte vector, with C-string&#39;s trailing <code>0u8</code> removed.</p>
 
@@ -206,7 +208,7 @@
     <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>inner</span>
 }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20fn%20as_bytes(%26self)%20-%3E%20%26%5Bu8%5D%20%7B%0A%20%20%20%20%26self.inner%5B..self.inner.len()%20-%201%5D%0A%7D%0A%0Apub%20fn%20as_bytes_with_nul(%26self)%20-%3E%20%26%5Bu8%5D%20%7B%0A%20%20%20%20%26self.inner%0A%7D%0A%7D">Run</a></pre>
 
-<p>Besides the above two methods to achive borrowing, the module also defines another new type, <code>CStr</code> to represent a borrowed C string. The relation is analoge to that between <code>String</code> and <code>str</code>:</p>
+<p>Besides the above two methods to achieve borrowing, the module also defines another new type, <code>CStr</code> to represent a borrowed C string. The relation is analogue to that between <code>String</code> and <code>str</code>:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>CStr</span> {

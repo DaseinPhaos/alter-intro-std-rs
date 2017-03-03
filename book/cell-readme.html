@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -343,13 +345,13 @@
 
 <p>It turns out that this type is simply just a wrapper around a reference to a celled flag.</p>
 
-<p>The associated <code>new</code> method is somewhat unusual as it returns an <code>Option</code> (instead of <code>Self</code> as what we&#39;d normally expect). internally, it determines if the flag presented is <code>WRITING</code>(indicating an immutable borrow is active). If it is, the method returns <code>None</code> indicating borrowing failure; it not, it returns a <code>Some</code> with the referenced flag count increnmented (indicating another immutable borrow has been activated).</p>
+<p>The associated <code>new</code> method is somewhat unusual as it returns an <code>Option</code> (instead of <code>Self</code> as what we&#39;d normally expect). internally, it determines if the flag presented is <code>WRITING</code>(indicating an immutable borrow is active). If it is, the method returns <code>None</code> indicating borrowing failure; it not, it returns a <code>Some</code> with the referenced flag count incremented (indicating another immutable borrow has been activated).</p>
 
 <p>The <code>Drop</code> trait&#39;s <code>drop</code> method, on the contrary, decrements the referenced flag count, indicating that current immutable borrow has gone out of scope.</p>
 
 <p>The <code>Clone</code> implementation by now should appears to be trivial.</p>
 
-<p>This addtional layer of abstraction allows the following method to be implemented:</p>
+<p>This additional layer of abstraction allows the following method to be implemented:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span><span class='op'>&gt;</span> <span class='ident'>Ref</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {

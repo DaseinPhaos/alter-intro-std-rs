@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -88,7 +90,7 @@
     }
 }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20Error%3A%20Debug%20%2B%20Display%20%7B%0A%20%20%20%20fn%20description(%26self)%20-%3E%20%26str%3B%0A%20%20%20%20fn%20cause(%26self)%20-%3E%20Option%3C%26Error%3E%20%7B%0A%20%20%20%20%20%20%20%20None%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
 
-<p>At a minimum, errors must provide a description via <code>description()</code>. Additional details can be addded optionally via the <code>Display</code> trait. The error cause chain can also be provided via <code>cause()</code>.</p>
+<p>At a minimum, errors must provide a description via <code>description()</code>. Additional details can be added optionally via the <code>Display</code> trait. The error cause chain can also be provided via <code>cause()</code>.</p>
 
 <p>An example:</p>
 

@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -145,7 +147,7 @@
     }
 }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20PartialOrd%3CRhs%3A%20%3FSized%20%3D%20Self%3E%20%3A%20PartialEq%3CRhs%3E%20%7B%0A%20%20%20%20fn%20partial_cmp(%26self%2C%20rhs%3A%20%26Rhs)%20-%3E%20Option%3COrdering%3E%3B%0A%0A%20%20%20%20%2F%2F%20for%20%60%3C%60%0A%20%20%20%20%23%5Binline%5D%0A%20%20%20%20fn%20lt(%26self%2C%20rhs%3A%20%26Rhs)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20match%20self.partial_cmp(rhs)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some(Less)%20%3D%3E%20true%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20false%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20%2F%2F%20for%20%60%3C%3D%60%0A%20%20%20%20%23%5Binline%5D%0A%20%20%20%20fn%20le(%26self%2C%20rhs%3A%20%26Rhs)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20match%20self.partial_cmp(rhs)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some(Less)%20%7C%20Some(Equal)%20%3D%3E%20true%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20false%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20%2F%2F%20for%20%60%3E%60%0A%20%20%20%20%23%5Binline%5D%0A%20%20%20%20fn%20gt(%26self%2C%20rhs%3A%20%26Rhs)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20match%20self.partial_cmp(rhs)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some(Greater)%20%3D%3E%20true%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20false%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20%2F%2F%20for%20%60%3E%3D%60%0A%20%20%20%20%23%5Binline%5D%0A%20%20%20%20fn%20ge(%26self%2C%20rhs%3A%20%26Rhs)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20match%20self.partial_cmp(rhs)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some(Greater)%20%7C%20Some(Equal)%20%20%3D%3E%20true%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20false%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
 
-<p>Note that only the <code>partial_cmp</code> method needs to be implemented, the actual operator-methods is default generized using this method.</p>
+<p>Note that only the <code>partial_cmp</code> method needs to be implemented, the actual operator-methods is default generalized using this method.</p>
 
 <p>The method returns an <code>Option&lt;Ordering&gt;</code>, where <code>Ordering</code> is defined as:</p>
 
@@ -176,9 +178,9 @@
 
 <p>for <a href="https://en.wikipedia.org/wiki/Total_order">total order</a>. This means that, for all values in the implementing type: exactly one of <code>a&lt;b</code>, <code>a==b</code> or <code>a&gt;b</code> can be true; and that <code>a&lt;b</code> and <code>b&lt;c</code> implies <code>a&lt;c</code>, the same goes for both <code>==</code> and <code>&gt;</code>.</p>
 
-<p>This property is also reflected in the requierd method <code>cmp</code>: it returns an <code>Ordering</code>, instead of an <code>Option&lt;Ordering</code> as in the case of <code>PartialOrd&lt;Self&gt;</code>.</p>
+<p>This property is also reflected in the required method <code>cmp</code>: it returns an <code>Ordering</code>, instead of an <code>Option&lt;Ordering</code> as in the case of <code>PartialOrd&lt;Self&gt;</code>.</p>
 
-<p>A common trick can be used when implementing <code>Ord</code>: as the trait implies a total order, when implementing <code>PartialOrd&lt;Self&gt;</code> for supplimentary, the <code>partial_cmp</code> method can directly calls into <code>cmp</code> to avoid duplicated typing. For example,</p>
+<p>A common trick can be used when implementing <code>Ord</code>: as the trait implies a total order, when implementing <code>PartialOrd&lt;Self&gt;</code> for supplementary, the <code>partial_cmp</code> method can directly calls into <code>cmp</code> to avoid duplicated typing. For example,</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Eq</span>)]</span>

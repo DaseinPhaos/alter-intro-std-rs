@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -85,7 +87,7 @@
 <p>This module defines the <code>Any</code> trait and the <code>TypeId</code> struct. Together they form minimal support for runtime reflection.</p>
 
 <h1 id='typeid' class='section-header'><a href='#typeid'>TypeId</a></h1>
-<p>A <code>TypeId</code> represents a globally unique identifier for a type. It&#39;s an opacue object, but does allow basic operations such as cloning, comparison, and formatting.</p>
+<p>A <code>TypeId</code> represents a globally unique identifier for a type. It&#39;s an opaque object, but does allow basic operations such as cloning, comparison, and formatting.</p>
 
 <p>currently it is only available for <code>&#39;static</code> types.</p>
 
@@ -135,7 +137,7 @@
 
 <p>is more powerful.</p>
 
-<p>Its true strength is revealed when used as a trait object. It has an <code>is&lt;T&gt;</code> method whcich would return true if the underlying object is of type <code>T</code>, and two <code>downcast</code>ing methods returning corresponding <code>Some</code>:</p>
+<p>Its true strength is revealed when used as a trait object. It has an <code>is&lt;T&gt;</code> method which would return true if the underlying object is of type <code>T</code>, and two <code>downcast</code>ing methods returning corresponding <code>Some</code>:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>impl</span> <span class='ident'>Any</span> {

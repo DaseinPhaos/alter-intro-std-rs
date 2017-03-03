@@ -69,6 +69,8 @@
 </li>
 <li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
 </li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -94,7 +96,7 @@
 
 <p>The trait requires the above two methods to be implemented. <code>write</code> writes some input into the <code>Hasher</code>. Such writing can be accumulated, until a <code>finish</code> is invoked, yielding the final hashed value of the preceding data stream, as a <code>u64</code>.</p>
 
-<p>With the <code>write</code> method defined, the trait provides implementations for writing numeric type datas:</p>
+<p>With the <code>write</code> method defined, the trait provides implementations for writing numeric type data:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Hasher</span> {
@@ -126,9 +128,9 @@
     }
 }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20Hash%20%7B%0A%20%20%20%20fn%20hash%3CH%3A%20Hasher%3E(%26self%2C%20state%3A%20%26mut%20H)%3B%0A%0A%20%20%20%20fn%20hash_slice%3CH%3A%20Hasher%3E(data%3A%20%26%5BSelf%5D%2C%20state%3A%20%26mut%20H)%20where%20Self%3A%20Sized%20%7B%0A%20%20%20%20%20%20%20%20for%20piece%20in%20data%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20piece.hash(state)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
 
-<p>The required method <code>hash</code> should be implemented such that, given a hashing function object <code>state</code>, the value of the object is written into it. One can also use the <code>#[derive]</code> attribute with this trait to implement an default hashing strategy, if all fields of the type imeplement <code>Hash</code>. The resulting hash will be the combination of calling <code>hash</code> on each field. Most of the primitive types implements <code>Hash</code>.</p>
+<p>The required method <code>hash</code> should be implemented such that, given a hashing function object <code>state</code>, the value of the object is written into it. One can also use the <code>#[derive]</code> attribute with this trait to implement an default hashing strategy, if all fields of the type implement <code>Hash</code>. The resulting hash will be the combination of calling <code>hash</code> on each field. Most of the primitive types implements <code>Hash</code>.</p>
 
-<p>The defaultly implemented method <code>hash_slice</code> hashes a slice of <code>Self</code>.</p>
+<p>The default-implemented method <code>hash_slice</code> hashes a slice of <code>Self</code>.</p>
 
 <p>Most of the primitive types and a lot of other types in the <code>std</code> implement <code>Hash</code>.</p>
 
