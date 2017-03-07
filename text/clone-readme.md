@@ -1,5 +1,7 @@
 % std::clone
 
+> https://doc.rust-lang.org/std/clone/
+
 This module defines the `Clone` trait:
 
 ```ignore

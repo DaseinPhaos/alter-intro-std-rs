@@ -6,7 +6,9 @@
         "usua",
         "automatcial",
         "Rustonomicon",
-        "struct"
+        "struct",
+        "droppable",
+        "dtors"
     ],
     "documentTypes": [
         "markdown",

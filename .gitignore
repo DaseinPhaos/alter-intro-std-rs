@@ -2,3 +2,4 @@ _book
 local
 target
 .vscode/
+.vscode/spellchecker.json
