@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>std::marker</title>
+
+    <link rel="stylesheet" type="text/css" href="rustbook.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+                <div id="nav">
+                    <button id="toggle-nav">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </button>
+                </div>
+<div id='toc' class='mobile-hidden'>
+<ol class='chapter'>
+<li><a  href='README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a  href='macros-readme.html'><b>2.</b> Macros in std</a>
+</li>
+<li><a  href='mods-readme.html'><b>3.</b> Uncategorized Modules</a>
+<ol class='section'>
+<li><a  href='any-readme.html'><b>3.1.</b> std::any</a>
+</li>
+<li><a  href='ascii-readme.html'><b>3.2.</b> std::ascii</a>
+</li>
+<li><a  href='borrow-readme.html'><b>3.3.</b> std::borrow</a>
+</li>
+<li><a  href='boxed-readme.html'><b>3.4.</b> std::boxed</a>
+</li>
+<li><a  href='cell-readme.html'><b>3.5.</b> std::cell</a>
+</li>
+<li><a  href='clone-readme.html'><b>3.6.</b> std::clone</a>
+</li>
+<li><a  href='cmp-readme.html'><b>3.7.</b> std::cmp</a>
+</li>
+<li><a  href='collections-readme.html'><b>3.8.</b> std::collections</a>
+</li>
+<li><a  href='convert-readme.html'><b>3.9.</b> std::convert</a>
+</li>
+<li><a  href='default-readme.html'><b>3.10.</b> std::default</a>
+</li>
+<li><a  href='env-readme.html'><b>3.11.</b> std::env</a>
+</li>
+<li><a  href='error-readme.html'><b>3.12.</b> std::error</a>
+</li>
+<li><a  href='ffi-readme.html'><b>3.13.</b> std::ffi</a>
+</li>
+<li><a  href='fmt-readme.html'><b>3.14.</b> std::fmt</a>
+</li>
+<li><a  href='fs-readme.html'><b>3.15.</b> std::fs</a>
+</li>
+<li><a  href='hash-readme.html'><b>3.16.</b> std::hash</a>
+</li>
+<li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
+</li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
+<li><a class='active' href='marker-readme.html'><b>3.19.</b> std::marker</a>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">std::marker</h1>
+    <blockquote>
+<p><a href="https://doc.rust-lang.org/std/marker/">https://doc.rust-lang.org/std/marker/</a></p>
+</blockquote>
+
+<p>This module contains some &quot;marker&quot; traits that represent some basic properties of types.</p>
+
+<p>Primarily, the module defines:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Copy</span>: <span class='ident'>Clone</span> { }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20Copy%3A%20Clone%20%7B%20%7D%0A%7D">Run</a></pre>
+
+<p>This trait represents a type whose values can be duplicated by simply &quot;copying bits&quot;. Types implementing this trait changes the default &quot;moving&quot; semantic of variable binding into by-value copying.</p>
+
+<p>Note that this trait derives from <code>Clone</code>, which totally makes sense: a type that can be trivially duplicated of course can also be trivially cloned. It also means that for a <code>T: Copy</code> and some <code>x: T</code>, <code>let y = x;</code> is equivalent to <code>let y = x.clone();</code>.</p>
+
+<p>Like <code>Clone</code>, this trait can be derived if all of its components implement <code>Copy</code>.</p>
+
+<hr>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>trait</span> <span class='ident'>Send</span> { }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20unsafe%20trait%20Send%20%7B%20%7D%0A%7D">Run</a></pre>
+
+<p>This trait represents a type that can be safely transferred across thread boundaries.</p>
+
+<p>For most of the times, you don&#39;t have to deal with implementing thi trait explicitly, (in fact, the trait is marked as <code>unsafe</code>, thus it is essentially <code>unsafe</code> for a user to implement this trait by hand) the compiler would automatically generates these traits for your types when it determines appropriate.</p>
+
+<p>The rule the compiler uses is quite simple: automatcial deriving. That is, if a type is composed entirely of <code>Send</code> types, then it is <code>Send</code>.</p>
+
+<p>Most types are <code>Send</code>, exceptions include:</p>
+
+<ul>
+<li>raw pointers</li>
+<li><code>Rc</code></li>
+</ul>
+
+<p>For further explanations of why this is the case, refer to <a href="https://doc.rust-lang.org/nomicon/send-and-sync.html">the Rustonomicon</a>.</p>
+
+<hr>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>trait</span> <span class='ident'>Sync</span> { }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20unsafe%20trait%20Sync%20%7B%20%7D%0A%7D">Run</a></pre>
+
+<p>This trait represents a type whose immutable references can be safely shared between threads. In other words, if <code>T: Sync</code> then <code>&amp;T: Send</code>.</p>
+
+<p>From this definition, a somewhat surprising consequence is that, if <code>T: Sync</code> then <code>&amp;mut T: Sync</code>.</p>
+
+<p>Like <code>Send</code>, this trait is automatically derived by the compiler. Like <code>Send</code>, it is also <code>unsafe</code> to implement by hand.</p>
+
+<p>Essentially, types with interior mutability are determined to be not <code>Sync</code> by the compiler, primitives including:</p>
+
+<ul>
+<li>raw pointers,</li>
+<li><code>UnsafeCell</code>, (thus <code>Cell</code> and <code>RefCell</code>),</li>
+<li><code>Rc</code></li>
+</ul>
+
+<p>For further explanations, refer to <a href="https://doc.rust-lang.org/nomicon/send-and-sync.html">the Rustonomicon</a>.</p>
+
+<hr>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Sized</span> { }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20Sized%20%7B%20%7D%0A%7D">Run</a></pre>
+
+<p>This trait refers to a type with a constant size known at compile time. We should be familiar with it by now, as all type parameters have an implicit bound of <code>Sized</code>, which can only be removed by a special bound <code>?Sized</code>. Note one exception of this implicit bound, the <code>Self</code> type of a trait. This prevents the a trait from directly being used to form a trait object.</p>
+
+<hr>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>T</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span>;<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20struct%20PhantomData%3CT%3E%20where%20T%3A%20%3FSized%3B%0A%7D">Run</a></pre>
+
+<p>This type is a zero-sized type marker, being used to relate one type <em>logically</em> with another.</p>
+
+<p>Typically usages include:</p>
+
+<ul>
+<li>associating lifetime with raw-pointer-wrappers:</li>
+</ul>
+
+<pre class='rust rust-example-rendered'>
+
+<span class='kw'>struct</span> <span class='ident'>Slice</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='ident'>start</span>: <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>T</span>,
+    <span class='ident'>end</span>: <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>T</span>,
+    <span class='ident'>_phantom</span>: <span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span><span class='op'>&gt;</span>,
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Ause%20std%3A%3Amarker%3A%3APhantomData%3B%0A%0Astruct%20Slice%3C'a%2C%20T%3E%20%7B%0A%20%20%20%20start%3A%20*const%20T%2C%0A%20%20%20%20end%3A%20*const%20T%2C%0A%20%20%20%20_phantom%3A%20PhantomData%3C%26'a%20T%3E%2C%0A%7D%0A%7D">Run</a></pre>
+
+<p>A <code>Slice</code> references some data that should only be valid for <code>&#39;a</code>. Yet internally the <code>Slice</code> uses raw pointers for efficiency, which are not related to any lifetimes. To actually relate the lifetime to <code>Slice</code>, a <code>PhantomData</code> is used.</p>
+
+<ul>
+<li>associating types:</li>
+</ul>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>foreign_lib</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
+
+<span class='kw'>struct</span> <span class='ident'>ExternalResource</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
+    <span class='ident'>handle</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> (),
+    <span class='ident'>pahntom_type</span>: <span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>,
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>ResType</span><span class='op'>&gt;</span> <span class='ident'>ExternalResource</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>ExternalResource</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>res_type_size</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>();
+        <span class='ident'>ExternalResource</span> {
+            <span class='ident'>handle</span>: <span class='ident'>foreign_lib</span>::<span class='ident'>acquire_resource</span>(),
+            <span class='ident'>phantom_type</span>: <span class='ident'>PhantoData</span>,
+        }
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aextern%20crate%20foreign_lib%3B%0Ause%20std%3A%3Amarker%3A%3APhantomData%3B%0Ause%20std%3A%3Amem%3B%0A%0Astruct%20ExternalResource%3CR%3E%20%7B%0A%20%20%20%20handle%3A%20%26mut%20()%2C%0A%20%20%20%20pahntom_type%3A%20PhantomData%3CR%3E%2C%0A%7D%0A%0Aimpl%3CR%3A%20ResType%3E%20ExternalResource%3CR%3E%20%7B%0A%20%20%20%20fn%20new()%20-%3E%20ExternalResource%3CR%3E%20%7B%0A%20%20%20%20%20%20%20%20let%20res_type_size%20%3D%20mem%3A%3Asize_of%3A%3A%3CR%3E()%3B%0A%20%20%20%20%20%20%20%20ExternalResource%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20handle%3A%20foreign_lib%3A%3Aacquire_resource()%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20phantom_type%3A%20PhantoData%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<ul>
+<li>associating ownership and drop checking:
+Adding a field of type <code>PhantomData&lt;T&gt;</code> indicates that your type <em>owns</em> some data of type <code>T</code>. This in turn means that, when your type is dropped, it may also drop some instance of type <code>T</code>. This in turn means that, the owning type should soundly implement drop. If the struct doesn&#39;t in fact <em>own</em> any <code>T</code>s, it is better off to use a reference type (or raw pointer types when no lifetime applies).</li>
+</ul>
+
+    <script src='rustbook.js'></script>
+</div></div>
+
+
+</body>
+</html>
