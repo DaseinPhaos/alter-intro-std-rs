@@ -95,6 +95,10 @@ def build():
 
     copy_merge(src=RUSTBOOK_OUT_PATH, dst=BOOK_OUT_PATH)
     copy_merge(src=STATIC_PATH, dst=OUT_PATH)
+
+    for entry in os.scandir(RUSTBOOK_OUT_PATH):
+        if entry.name == "rustbook.css" or entry.name == "rustbook.js":
+            os.remove(entry.path)
     msg('.. done.')
 
 def do_open():

@@ -4,7 +4,9 @@
         "sidemenu",
         "realtime",
         "usua",
-        "automatcial"
+        "automatcial",
+        "Rustonomicon",
+        "struct"
     ],
     "documentTypes": [
         "markdown",

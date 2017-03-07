@@ -2,7 +2,7 @@
 
 > https://doc.rust-lang.org/std/marker/
 
-This module contains some "marker"-traits that represents some basic properties of types.
+This module contains some "marker" traits that represent some basic properties of types.
 
 Primarily, the module defines:
 
@@ -10,7 +10,7 @@ Primarily, the module defines:
 pub trait Copy: Clone { }
 ```
 
-This trait represents a type whose values can be duplicated by simply "copying bits". Types implementing this trait changes the default "moving" behavior of variable binding into by-value copying.
+This trait represents a type whose values can be duplicated by simply "copying bits". Types implementing this trait changes the default "moving" semantic of variable binding into by-value copying.
 
 Note that this trait derives from `Clone`, which totally makes sense: a type that can be trivially duplicated of course can also be trivially cloned. It also means that for a `T: Copy` and some `x: T`, `let y = x;` is equivalent to `let y = x.clone();`.
 
@@ -47,7 +47,7 @@ From this definition, a somewhat surprising consequence is that, if `T: Sync` th
 
 Like `Send`, this trait is automatically derived by the compiler. Like `Send`, it is also `unsafe` to implement by hand.
 
-Essentially, types with interiror mutability are determined to be not `Sync` by the compiler, primitives including:
+Essentially, types with interior mutability are determined to be not `Sync` by the compiler, primitives including:
 
 - raw pointers,
 - `UnsafeCell`, (thus `Cell` and `RefCell`),
