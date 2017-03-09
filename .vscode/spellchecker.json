@@ -10,7 +10,8 @@
         "dtors",
         "Rustonomicon",
         "lvalue",
-        "rvalue"
+        "rvalue",
+        "structs"
     ],
     "documentTypes": [
         "markdown",

@@ -1,8 +1,8 @@
 % std::ops
 
-This module contains traits that allows the user to overload certain operators.
+This module contains traits that allow the user to overload certain operators.
 
-The first set of traits deals with numerical operators, including `+`, `-`, `*`, `/`, `%`, and bitwise operators `&`, `|`, `^`, `<<` and `>>`:
+The first set of traits deals with numerical operators, including `+`, `-`, `*`, `/`, `%`, and bitwise operators `&`, `|`, `^`, `<<`, `>>`:
 
 ```ignore
 pub trait Add<RHS = Self> {
@@ -58,6 +58,8 @@ pub trait Shr<RHS> {
 
 Note that these traits consumes both parameters by value.
 
+---
+
 Next comes a set of traits dealing with assigning-operators, including `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=` and `^=`:
 
 ```ignore
@@ -101,6 +103,8 @@ pub trait ShrAssign<Rhs> {
     fn shr_assign(&mut self, Rhs);
 }
 ```
+
+---
 
 Additionally, some unary-operators can also be overloaded, including: `-`, `!`, `*`:
 
@@ -150,12 +154,12 @@ Then
 
 ```rust
 # use std::ops::Deref;
-
+# 
 # struct Foo {
 #    u: i32,
 #    v: i32,
 # }
-
+# 
 # impl Deref for Foo {
 #     type Target = i32;
 # 
@@ -163,11 +167,12 @@ Then
 #         &self.u
 #     }
 # }
-
+# 
 let foo = Foo { u: 2, v: 3 };
 let x = *foo; // let x: i32 = foo.u
 assert_eq!(x, 2);
 ```
+
 
 Under the rvalue context, we have:
 
@@ -177,19 +182,19 @@ pub trait DerefMut: Deref {
 }
 ```
 
-Note `DerefMut` was built on top of `Deref`. This ensures that the underlying type returned by different context stays consistent.
+Note that `DerefMut` was built on top of `Deref`. This ensures that the underlying type returned by different context stays consistent.
 
 Continuing with our example above, we implement `DerefMut` for `Foo` as well:
 
 ```rust
 use std::ops::DerefMut;
 # use std::ops::Deref;
-
+# 
 # struct Foo {
 #    u: i32,
 #    v: i32,
 # }
-
+# 
 # impl Deref for Foo {
 #     type Target = i32;
 # 
@@ -212,6 +217,8 @@ assert_eq!(2, foo.v); // foo.v == 2
 
 In our example, we implement the two traits such that they actually return references to *different* places. This is merely a demonstration of the ability that we *can*, but in practice I don't see any reason that we *should*, as this may cause confusion to the user.
 
+---
+
 Additionally, the module contains two traits for indexing operator `[]`. Like `*`, depending on the context, one of the two trait methods would be chosen.
 
 ```ignore
@@ -225,7 +232,11 @@ pub trait IndexMut<Idx: ?Sized>: Index<Idx> {
 }
 ```
 
+---
+
 Additionally, the module contains traits for operator`()`: `FnOnce`, `FnMut` and `Fn`. As the time of writing these three traits act more like a marker. Their usage and implementation are feature-gated, thus we might not discuss them here.
+
+---
 
 Finally, the module contains the special trait `Drop`. This trait doesn't have any operator associated. Its associated method would get invoked when the value goes out of scope.
 
