@@ -22,3 +22,6 @@
     * [std::iter](iter-readme.md)
     * [std::marker](marker-readme.md)
     * [std::mem](mem-readme.md)
+    * [std::net](net-readme.md)
+    * [std::num](num-readme.md)
+    * [std::ops](ops-readme.md)

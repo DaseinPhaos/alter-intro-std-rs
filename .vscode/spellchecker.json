@@ -5,10 +5,12 @@
         "realtime",
         "usua",
         "automatcial",
-        "Rustonomicon",
         "struct",
         "droppable",
-        "dtors"
+        "dtors",
+        "Rustonomicon",
+        "lvalue",
+        "rvalue"
     ],
     "documentTypes": [
         "markdown",
