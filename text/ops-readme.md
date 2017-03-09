@@ -3,6 +3,7 @@
 This module contains traits that allows the user to overload certain operators.
 
 The first set of traits deals with numerical operators, including `+`, `-`, `*`, `/`, `%`, and bitwise operators `&`, `|`, `^`, `<<` and `>>`:
+
 ```ignore
 pub trait Add<RHS = Self> {
     type Output;
