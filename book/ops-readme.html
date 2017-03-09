@@ -92,58 +92,58 @@
     <h1 class="title">std::ops</h1>
     <p>This module contains traits that allows the user to overload certain operators.</p>
 
-<p>The first set of traits deals with numerical operators, including <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, and bitwise operators <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code> and <code>&gt;&gt;</code>:
-```ignore
-pub trait Add<RHS = Self> {
-    type Output;
-    fn add(self, rhs: RHS) -&gt; Self::Output;
-}</p>
+<p>The first set of traits deals with numerical operators, including <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, and bitwise operators <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code> and <code>&gt;&gt;</code>:</p>
 
-<p>pub trait Sub<RHS = Self> {
-    type Output;
-    fn sub(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait Mul<RHS = Self> {
-    type Output;
-    fn mul(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait Div<RHS = Self> {
-    type Output;
-    fn div(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait Rem<RHS = Self> {
-    type Output = Self;
-    fn rem(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait BitAnd<RHS = Self> {
-    type Output;
-    fn bitand(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait BitOr<RHS = Self> {
-    type Output;
-    fn bitor(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait BitXor<RHS = Self> {
-    type Output;
-    fn bitxor(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait Shl<RHS> {
-    type Output;
-    fn shl(self, rhs: RHS) -&gt; Self::Output;
-}</p>
-
-<p>pub trait Shr<RHS> {
-    type Output;
-    fn shr(self, rhs: RHS) -&gt; Self::Output;
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Add</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>add</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
 }
-```</p>
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Sub</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>sub</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Mul</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Div</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>div</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Rem</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>rem</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>bitand</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>BitOr</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>bitor</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>bitxor</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Shl</span><span class='op'>&lt;</span><span class='ident'>RHS</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>shl</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}
+
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Shr</span><span class='op'>&lt;</span><span class='ident'>RHS</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>shr</span>(<span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>RHS</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20Add%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20add(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20Sub%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20sub(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20Mul%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20mul(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20Div%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20div(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20Rem%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%20%3D%20Self%3B%0A%20%20%20%20fn%20rem(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20BitAnd%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20bitand(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20BitOr%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20bitor(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20BitXor%3CRHS%20%3D%20Self%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20bitxor(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20Shl%3CRHS%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20shl(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20Shr%3CRHS%3E%20%7B%0A%20%20%20%20type%20Output%3B%0A%20%20%20%20fn%20shr(self%2C%20rhs%3A%20RHS)%20-%3E%20Self%3A%3AOutput%3B%0A%7D%0A%7D">Run</a></pre>
 
 <p>Note that these traits consumes both parameters by value.</p>
 
