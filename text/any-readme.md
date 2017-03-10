@@ -72,7 +72,7 @@ impl Any {
         t == boxed
     }
 
-    pub fn downcast_ref<T: AnyM(&self) -> Option<&T> {
+    pub fn downcast_ref<T: Any>(&self) -> Option<&T> {
         if self.is::<T>() {
             unsafe {
                 Some(&*(self as *const Any as *const T))

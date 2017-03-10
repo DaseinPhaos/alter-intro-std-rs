@@ -26,3 +26,5 @@
     * [std::num](num-readme.md)
     * [std::ops](ops-readme.md)
     * [std::option](option-readme.md)
+    * [std::os](os-readme.md)
+    * [std::panic](panic-readme.md)
