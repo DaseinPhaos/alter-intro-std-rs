@@ -28,3 +28,4 @@
     * [std::option](option-readme.md)
     * [std::os](os-readme.md)
     * [std::panic](panic-readme.md)
+    * [std::path](path-readme.md)

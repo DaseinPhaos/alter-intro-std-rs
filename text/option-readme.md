@@ -185,7 +185,7 @@ Note that `Option<T>` also implements `IntoIterator<Item=T>`, `&Option<T>` imple
 
 ---
 
-To chain one option with possibly another:
+To chain one option with possibly another, such that if the current option is `Some` then return the next option `optd`, otherwise returning `None`:
 
 ```ignore
 impl<T> Option<T> {
@@ -207,7 +207,7 @@ impl<T> Option<T> {
 
 ---
 
-To chain options of the same type:
+To chain options of the same type, such that current option gets returned if it is `Some`, otherwise return the next option `optd`:
 
 ```ignore
 impl<T> Option<T> {
