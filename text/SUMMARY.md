@@ -29,3 +29,4 @@
     * [std::os](os-readme.md)
     * [std::panic](panic-readme.md)
     * [std::path](path-readme.md)
+    * [std::prelude](prelude-readme.md)
