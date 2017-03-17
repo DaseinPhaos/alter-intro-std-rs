@@ -328,7 +328,7 @@ impl Path {
 }
 ```
 
-Finally, note that it implements `ToOwned<Owned=PathBuf`, `AsRef<OsStr>`, `AsRef<Path>`, `Debug`, `PartialEq`, `Eq`, `PartialOrd`, `Ord`, `Hash`.
+Finally, note that it implements `ToOwned<Owned=PathBuf>`, `AsRef<OsStr>`, `AsRef<Path>`, `Debug`, `PartialEq`, `Eq`, `PartialOrd`, `Ord`, `Hash`.
 
 # PathBuf
 
