@@ -1,6 +1,6 @@
 % std::process
 
-The module dealing with processes.
+The module deals with processes.
 
 First of all, the module defines
 
@@ -167,6 +167,7 @@ pub struct Child {
 ```
 
 Notice that it also exposes fields representing handles to child process's stdio handles:
+
 - `ChildStdin` implements `std::io::Write`, so that we can write into it.
 - `ChildStdout` and `ChildStderr` implements `std::io::Read`, so that we can read from it.
 
