@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>std::path</title>
+
+    <link rel="stylesheet" type="text/css" href="rustbook.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+                <div id="nav">
+                    <button id="toggle-nav">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </button>
+                </div>
+<div id='toc' class='mobile-hidden'>
+<ol class='chapter'>
+<li><a  href='README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a  href='macros-readme.html'><b>2.</b> Macros in std</a>
+</li>
+<li><a  href='mods-readme.html'><b>3.</b> Uncategorized Modules</a>
+<ol class='section'>
+<li><a  href='any-readme.html'><b>3.1.</b> std::any</a>
+</li>
+<li><a  href='ascii-readme.html'><b>3.2.</b> std::ascii</a>
+</li>
+<li><a  href='borrow-readme.html'><b>3.3.</b> std::borrow</a>
+</li>
+<li><a  href='boxed-readme.html'><b>3.4.</b> std::boxed</a>
+</li>
+<li><a  href='cell-readme.html'><b>3.5.</b> std::cell</a>
+</li>
+<li><a  href='clone-readme.html'><b>3.6.</b> std::clone</a>
+</li>
+<li><a  href='cmp-readme.html'><b>3.7.</b> std::cmp</a>
+</li>
+<li><a  href='collections-readme.html'><b>3.8.</b> std::collections</a>
+</li>
+<li><a  href='convert-readme.html'><b>3.9.</b> std::convert</a>
+</li>
+<li><a  href='default-readme.html'><b>3.10.</b> std::default</a>
+</li>
+<li><a  href='env-readme.html'><b>3.11.</b> std::env</a>
+</li>
+<li><a  href='error-readme.html'><b>3.12.</b> std::error</a>
+</li>
+<li><a  href='ffi-readme.html'><b>3.13.</b> std::ffi</a>
+</li>
+<li><a  href='fmt-readme.html'><b>3.14.</b> std::fmt</a>
+</li>
+<li><a  href='fs-readme.html'><b>3.15.</b> std::fs</a>
+</li>
+<li><a  href='hash-readme.html'><b>3.16.</b> std::hash</a>
+</li>
+<li><a  href='io-readme.html'><b>3.17.</b> std::io</a>
+</li>
+<li><a  href='iter-readme.html'><b>3.18.</b> std::iter</a>
+</li>
+<li><a  href='marker-readme.html'><b>3.19.</b> std::marker</a>
+</li>
+<li><a  href='mem-readme.html'><b>3.20.</b> std::mem</a>
+</li>
+<li><a  href='net-readme.html'><b>3.21.</b> std::net</a>
+</li>
+<li><a  href='num-readme.html'><b>3.22.</b> std::num</a>
+</li>
+<li><a  href='ops-readme.html'><b>3.23.</b> std::ops</a>
+</li>
+<li><a  href='option-readme.html'><b>3.24.</b> std::option</a>
+</li>
+<li><a  href='os-readme.html'><b>3.25.</b> std::os</a>
+</li>
+<li><a  href='panic-readme.html'><b>3.26.</b> std::panic</a>
+</li>
+<li><a class='active' href='path-readme.html'><b>3.27.</b> std::path</a>
+</li>
+<li><a  href='prelude-readme.html'><b>3.28.</b> std::prelude</a>
+</li>
+<li><a  href='process-readme.html'><b>3.29.</b> std::process</a>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">std::path</h1>
+    <p>This module essentially provides two types <code>PathBuf</code> and <code>Path</code> (akin to <code>String</code> and <code>str</code>) for cross-platform path manipulation.</p>
+
+<p>To create an immutable path, one can create <code>Path</code> slice directly from a <code>str</code> slice.</p>
+
+<p>To modify paths, one use <code>PathBuf</code>.</p>
+
+<h1 id='rules-o-paths' class='section-header'><a href='#rules-o-paths'>Rules o Paths</a></h1>
+<p>A path consists of a sequence of &quot;components&quot;, which roughly correspond to the substrings between path separators.</p>
+
+<p>Specifically, current directory component is represented by a <code>.</code> character, while root directory component is represented as a prefixed separator (on Windows, a disk-prefix, e.g. <code>C:\\</code>, might also be included).</p>
+
+<p>By default, when building a path two normalizations are performed:</p>
+
+<ul>
+<li>Repeated separators would be ignored, thus <code>a/b</code> and <code>a//b</code> both have components <code>a</code> and <code>b</code>.</li>
+<li>Component <code>.</code> not at the head ot the path would be ignored, thus <code>././a/./b/.</code> would get normalized to <code>./a/b</code>.</li>
+</ul>
+
+<h1 id='component' class='section-header'><a href='#component'>Component</a></h1>
+<p>A single component of the path is represented by</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Component</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+    <span class='ident'>Prefix</span>(<span class='ident'>PrefixComponent</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>), <span class='comment'>// A Windows path prefix</span>
+    <span class='ident'>RootDir</span>, <span class='comment'>// appears after any prefix, before anything else</span>
+    <span class='ident'>CurDir</span>, <span class='comment'>// i.e. `.`</span>
+    <span class='ident'>ParentDir</span>, <span class='comment'>// i.e. `..`</span>
+    <span class='ident'>Normal</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>OsStr</span>), <span class='comment'>// a normal component</span>
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20enum%20Component%3C'a%3E%20%7B%0A%20%20%20%20Prefix(PrefixComponent%3C'a%3E)%2C%20%2F%2F%20A%20Windows%20path%20prefix%0A%20%20%20%20RootDir%2C%20%2F%2F%20appears%20after%20any%20prefix%2C%20before%20anything%20else%0A%20%20%20%20CurDir%2C%20%2F%2F%20i.e.%20%60.%60%0A%20%20%20%20ParentDir%2C%20%2F%2F%20i.e.%20%60..%60%0A%20%20%20%20Normal(%26'a%20OsStr)%2C%20%2F%2F%20a%20normal%20component%0A%7D%0A%7D">Run</a></pre>
+
+<p>It can be transformed into an <code>&amp;OsStr</code> with method <code>fn as_os_str(self) -&gt; ...</code>.</p>
+
+<p>Note that it implements <code>Copy</code>, <code>Clone</code>, and <code>AsRef&lt;OsStr&gt;</code>.</p>
+
+<h1 id='path' class='section-header'><a href='#path'>Path</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Path</span> {
+    <span class='ident'>inner</span>: <span class='ident'>OsStr</span>,
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20struct%20Path%20%7B%0A%20%20%20%20inner%3A%20OsStr%2C%0A%7D%0A%7D">Run</a></pre>
+
+<p>Represents a slice of a path.</p>
+
+<p>To construct a slice of it:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>OsStr</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='question-mark'>?</span><span class='ident'>Sized</span><span class='op'>&gt;</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Path</span> {
+        <span class='kw'>unsafe</span> { <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>::(<span class='ident'>s</span>.<span class='ident'>as_ref</span>()) }
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20new%3CS%3A%20AsRef%3COsStr%3E%20%2B%20%3FSized%3E(s%3A%20%26S)%20-%3E%20%26Path%20%7B%0A%20%20%20%20%20%20%20%20unsafe%20%7B%20std%3A%3Amem%3A%3Atransmute%3A%3A(s.as_ref())%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To transform it as a <code>&amp;OsStr</code> or to a <code>&amp;str</code> or loosely to a <code>String</code> or to an owned <code>PathBuf</code>:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>as_os_str</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>OsStr</span> {
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>inner</span>
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_str</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>inner</span>.<span class='ident'>to_str</span>()
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_string_lossy</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Cow</span><span class='op'>&lt;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>inner</span>.<span class='ident'>to_string_lossy</span>()
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_path_buf</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='ident'>PathBuf</span>::<span class='ident'>from</span>(<span class='self'>self</span>.<span class='ident'>inner</span>.<span class='ident'>to_os_string</span>())
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20as_os_str(%26self)%20-%3E%20%26OsStr%20%7B%0A%20%20%20%20%20%20%20%20%26self.inner%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20to_str(%26self)%20-%3E%20Option%3C%26str%3E%20%7B%0A%20%20%20%20%20%20%20%20self.inner.to_str()%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20to_string_lossy(%26self)%20-%3E%20Cow%3Cstr%3E%20%7B%0A%20%20%20%20%20%20%20%20self.inner.to_string_lossy()%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20to_path_buf(%26self)%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20PathBuf%3A%3Afrom(self.inner.to_os_string())%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To determine if it is absolute (i.e. independent of the current working directory) or relative (i.e. not absolute):</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_absolute</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {<span class='comment'>/*...*/</span>}
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_relative</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_absolute</span>()
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20is_absolute(%26self)%20-%3E%20bool%20%7B%2F*...*%2F%7D%0A%0A%20%20%20%20pub%20fn%20is_relative(%26self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20!self.is_absolute()%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To produce a sequenced iterator over the components of the path:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>components</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Components</span> {<span class='comment'>/*...*/</span>}
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20components(%26self)%20-%3E%20Components%20%7B%2F*...*%2F%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To determine whether a path has a root component:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>has_root</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>components</span>().<span class='ident'>has_root</span>()
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20has_root(%26self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20self.components().has_root()%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To get the parent path (if any):</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>parent</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>Path</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>comps</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>components</span>();
+        <span class='kw'>let</span> <span class='ident'>tail</span> <span class='op'>=</span> <span class='ident'>comps</span>.<span class='ident'>next_back</span>();
+        <span class='ident'>tail</span>.<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>p</span><span class='op'>|</span> {
+            <span class='kw'>match</span> <span class='ident'>p</span> {
+                <span class='ident'>Component</span>::<span class='ident'>Normal</span>(_) <span class='op'>|</span>
+                <span class='ident'>Component</span>::<span class='ident'>CurDir</span> <span class='op'>|</span>
+                <span class='ident'>Component</span>::<span class='ident'>ParentDir</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>comps</span>.<span class='ident'>as_path</span>()),
+                _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+            }
+        })
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20parent(%26self)%20-%3E%20Option%3C%26Path%3E%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20comps%20%3D%20self.components()%3B%0A%20%20%20%20%20%20%20%20let%20tail%20%3D%20comps.next_back()%3B%0A%20%20%20%20%20%20%20%20tail.and_then(%7Cp%7C%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20match%20p%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Component%3A%3ANormal(_)%20%7C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Component%3A%3ACurDir%20%7C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Component%3A%3AParentDir%20%3D%3E%20Some(comps.as_path())%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20None%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D)%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To get the final component of the path. If the path terminates in <code>..</code>, this method returns <code>None</code>:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>file_name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>OsStr</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>components</span>().<span class='ident'>next_back</span>().<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>p</span><span class='op'>|</span> {
+            <span class='kw'>match</span> <span class='ident'>p</span> {
+                <span class='ident'>Component</span>::<span class='ident'>Normal</span>(<span class='ident'>p</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>p</span>.<span class='ident'>as_ref</span>()),
+                _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+            }
+        })
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20file_name(%26self)%20-%3E%20Option%3C%26OsStr%3E%20%7B%0A%20%20%20%20%20%20%20%20self.components().next_back().and_then(%7Cp%7C%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20match%20p%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Component%3A%3ANormal(p)%20%3D%3E%20Some(p.as_ref())%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20_%20%3D%3E%20None%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D)%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To strip out the <code>prefix</code> part of the path:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>strip_prefix</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>P</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>prefix</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Path</span>, <span class='ident'>StripPrefixError</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>P</span>: <span class='question-mark'>?</span><span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span>
+    {
+        <span class='self'>self</span>.<span class='ident'>_strip_prefix</span>(<span class='ident'>prefix</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_strip_prefix</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>prefix</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Path</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Path</span>, <span class='ident'>StripPrefixError</span><span class='op'>&gt;</span> {
+        <span class='ident'>iter_after</span>(<span class='self'>self</span>.<span class='ident'>components</span>(), <span class='ident'>prefix</span>.<span class='ident'>components</span>())
+            .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>as_path</span>())
+            .<span class='ident'>ok_or</span>(<span class='ident'>StripPrefixError</span>(()))
+    }
+}
+
+<span class='kw'>fn</span> <span class='ident'>iter_after</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>I</span>, <span class='ident'>J</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='ident'>iter</span>: <span class='ident'>I</span>, <span class='kw-2'>mut</span> <span class='ident'>prefix</span>: <span class='ident'>J</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Clone</span>,
+          <span class='ident'>J</span>: <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span>,
+          <span class='ident'>A</span>: <span class='ident'>PartialEq</span>
+{
+    <span class='kw'>loop</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>inext</span> <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>clone</span>();
+        <span class='kw'>match</span> (<span class='ident'>inext</span>.<span class='ident'>next</span>(), <span class='ident'>prefix</span>.<span class='ident'>next</span>()) {
+            (<span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>x</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>y</span>)) <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='ident'>y</span> <span class='op'>=&gt;</span> (),
+            (<span class='prelude-val'>Some</span>(_), <span class='prelude-val'>Some</span>(_)) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>,
+            (<span class='prelude-val'>Some</span>(_), <span class='prelude-val'>None</span>) <span class='op'>|</span>
+            (<span class='prelude-val'>None</span>, <span class='prelude-val'>None</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Some</span>(<span class='ident'>iter</span>),
+            (<span class='prelude-val'>None</span>, <span class='prelude-val'>Some</span>(_)) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>,
+        }
+        <span class='ident'>iter</span> <span class='op'>=</span> <span class='ident'>inext</span>;
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20strip_prefix%3C'a%2C%20P%3E(%26'a%20self%2C%20prefix%3A%20%26'a%20P)%20-%3E%20Result%3C'a%20Path%2C%20StripPrefixError%3E%0A%20%20%20%20%20%20%20%20where%20P%3A%20%3FSized%20%2B%20AsRef%3CPath%3E%0A%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20self._strip_prefix(prefix.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_strip_prefix%3C'a%3E(%26'a%20self%2C%20prefix%3A%20%26'a%20Path)%20-%3E%20Result%3C'a%20Path%2C%20StripPrefixError%3E%20%7B%0A%20%20%20%20%20%20%20%20iter_after(self.components()%2C%20prefix.components())%0A%20%20%20%20%20%20%20%20%20%20%20%20.map(%7Cc%7C%20c.as_path())%0A%20%20%20%20%20%20%20%20%20%20%20%20.ok_or(StripPrefixError(()))%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20iter_after%3CA%2C%20I%2C%20J%3E(mut%20iter%3A%20I%2C%20mut%20prefix%3A%20J)%20-%3E%20Option%3CI%3E%0A%20%20%20%20where%20I%3A%20Iterator%3CItem%3DA%3E%20%2B%20Clone%2C%0A%20%20%20%20%20%20%20%20%20%20J%3A%20Iterator%3CItem%3DA%3E%2C%0A%20%20%20%20%20%20%20%20%20%20A%3A%20PartialEq%0A%7B%0A%20%20%20%20loop%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20inext%20%3D%20iter.clone()%3B%0A%20%20%20%20%20%20%20%20match%20(inext.next()%2C%20prefix.next())%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20(Some(ref%20x)%2C%20Some(ref%20y))%20if%20x%20%3D%3D%20y%20%3D%3E%20()%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20(Some(_)%2C%20Some(_))%20%3D%3E%20return%20None%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20(Some(_)%2C%20None)%20%7C%0A%20%20%20%20%20%20%20%20%20%20%20%20(None%2C%20None)%20%3D%3E%20return%20Some(iter)%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20(None%2C%20Some(_))%20%3D%3E%20return%20None%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20iter%20%3D%20inext%3B%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To find if the path starts with a prefix or ends with a suffix:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>starts_with</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>base</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>_starts_with</span>(<span class='ident'>base</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_starts_with</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>base</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='ident'>iter_after</span>(<span class='self'>self</span>.<span class='ident'>components</span>(), <span class='ident'>base</span>.<span class='ident'>components</span>()).<span class='ident'>is_some</span>()
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ends_with</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>child</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>_ends_with</span>(<span class='ident'>child</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_ends_with</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>child</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='ident'>iter_after</span>(<span class='self'>self</span>.<span class='ident'>components</span>.<span class='ident'>rev</span>(), <span class='ident'>child</span>.<span class='ident'>components</span>().<span class='ident'>rev</span>()).<span class='ident'>is_some</span>()
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20starts_with%3CP%3A%20AsRef%3CPath%3E%3E(%26self%2C%20base%3A%20P)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20self._starts_with(base.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_starts_with(%26self%2C%20base%3A%20%26Path)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20iter_after(self.components()%2C%20base.components()).is_some()%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20ends_with%3CP%3A%20AsRef%3CPath%3E%3E(%26self%2C%20child%3A%20P)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20self._ends_with(child.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_ends_with(%26self%2C%20child%3A%20%26Path)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20iter_after(self.components.rev()%2C%20child.components().rev()).is_some()%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To get the extension or non-extension part of the file name, we have:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>file_stem</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>OsStr</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>file_name</span>().<span class='ident'>map</span>(<span class='ident'>split_file_at_dot</span>).<span class='ident'>and_then</span>(<span class='op'>|</span>(<span class='ident'>before</span>, <span class='ident'>after</span>)<span class='op'>|</span> <span class='ident'>before</span>.<span class='ident'>or</span>(<span class='ident'>after</span>))
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>extension</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>OsStr</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>file_name</span>().<span class='ident'>map</span>(<span class='ident'>split_file_at_dot</span>).<span class='ident'>and_then</span>(<span class='op'>|</span>(<span class='ident'>before</span>, <span class='ident'>after</span>)<span class='op'>|</span> <span class='ident'>before</span>.<span class='ident'>and</span>(<span class='ident'>after</span>))
+    }
+}
+
+<span class='kw'>fn</span> <span class='ident'>split_file_at_dot</span>(<span class='ident'>file</span>: <span class='kw-2'>&amp;</span><span class='ident'>OsStr</span>) <span class='op'>-&gt;</span> (<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>OsStr</span><span class='op'>&gt;</span>, <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>OsStr</span><span class='op'>&gt;</span>) {
+    <span class='kw'>unsafe</span> {
+        <span class='kw'>if</span> <span class='ident'>os_str_as_u8_slice</span>(<span class='ident'>file</span>) <span class='op'>==</span> <span class='string'>b&quot;..&quot;</span> {
+            <span class='kw'>return</span> (<span class='prelude-val'>Some</span>(<span class='ident'>file</span>), <span class='prelude-val'>None</span>);
+        }
+
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='ident'>os_str_as_u8_slice</span>(<span class='ident'>file</span>).<span class='ident'>rsplitn</span>(<span class='number'>2</span>, <span class='op'>|</span><span class='ident'>b</span><span class='op'>|</span> <span class='kw-2'>*</span><span class='ident'>b</span> <span class='op'>==</span> <span class='string'>b&#39;.&#39;</span>);
+        <span class='kw'>let</span> <span class='ident'>after</span> <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>next</span>();
+        <span class='kw'>let</span> <span class='ident'>before</span> <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>next</span>();
+        <span class='kw'>if</span> <span class='ident'>before</span> <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='string'>b&quot;&quot;</span>) {
+            <span class='comment'>// The file starts with a `.`</span>
+            (<span class='prelude-val'>Some</span>(<span class='ident'>file</span>), <span class='prelude-val'>None</span>)
+        } <span class='kw'>else</span> {
+            (<span class='ident'>before</span>.<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>s</span><span class='op'>|</span> <span class='ident'>u8_slice_as_os_str</span>(<span class='ident'>s</span>)),
+             <span class='ident'>after</span>.<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>s</span><span class='op'>|</span> <span class='ident'>u8_slice_as_os_str</span>(<span class='ident'>s</span>)))
+        }
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20file_stem(%26self)%20-%3E%20Option%3C%26OsStr%3E%20%7B%0A%20%20%20%20%20%20%20%20self.file_name().map(split_file_at_dot).and_then(%7C(before%2C%20after)%7C%20before.or(after))%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20extension(%26self)%20-%3E%20Option%3C%26OsStr%3E%20%7B%0A%20%20%20%20%20%20%20%20self.file_name().map(split_file_at_dot).and_then(%7C(before%2C%20after)%7C%20before.and(after))%0A%20%20%20%20%7D%0A%7D%0A%0Afn%20split_file_at_dot(file%3A%20%26OsStr)%20-%3E%20(Option%3C%26OsStr%3E%2C%20Option%3C%26OsStr%3E)%20%7B%0A%20%20%20%20unsafe%20%7B%0A%20%20%20%20%20%20%20%20if%20os_str_as_u8_slice(file)%20%3D%3D%20b%22..%22%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20return%20(Some(file)%2C%20None)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20let%20mut%20iter%20%3D%20os_str_as_u8_slice(file).rsplitn(2%2C%20%7Cb%7C%20*b%20%3D%3D%20b'.')%3B%0A%20%20%20%20%20%20%20%20let%20after%20%3D%20iter.next()%3B%0A%20%20%20%20%20%20%20%20let%20before%20%3D%20iter.next()%3B%0A%20%20%20%20%20%20%20%20if%20before%20%3D%3D%20Some(b%22%22)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20The%20file%20starts%20with%20a%20%60.%60%0A%20%20%20%20%20%20%20%20%20%20%20%20(Some(file)%2C%20None)%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20(before.map(%7Cs%7C%20u8_slice_as_os_str(s))%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20after.map(%7Cs%7C%20u8_slice_as_os_str(s)))%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To create a new owned path by joining two paths together:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>join</span><span class='op'>&lt;</span><span class='ident'>P</span> <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>path</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='self'>self</span>.<span class='ident'>_join</span>(<span class='ident'>path</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_join</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>) <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>to_path_buf</span>();
+        <span class='ident'>buf</span>.<span class='ident'>push</span>(<span class='ident'>path</span>);
+        <span class='ident'>buf</span>
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20join%3CP%20AsRef%3CPath%3E%3E(%26self%2C%20path%3A%20P)%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20self._join(path.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_join(%26self%2C%20path%3A%20%26Path)%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20buf%20%3D%20self.to_path_buf()%3B%0A%20%20%20%20%20%20%20%20buf.push(path)%3B%0A%20%20%20%20%20%20%20%20buf%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To create a new owned path, but replace the current filename with <code>file_name</code>, or replace the current extension with <code>extension</code>:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_file_name</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>OsStr</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>file_name</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='self'>self</span>.<span class='ident'>_with_file_name</span>(<span class='ident'>file_name</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_with_self_name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>file_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>OsStr</span>) <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>to_path_buf</span>();
+        <span class='ident'>buf</span>.<span class='ident'>set_file_name</span>(<span class='ident'>file_name</span>);
+        <span class='ident'>buf</span>
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_extension</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>OsStr</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>extension</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='self'>self</span>.<span class='ident'>_with_extension</span>(<span class='ident'>extension</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_with_extension</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>extension</span>: <span class='kw-2'>&amp;</span><span class='ident'>OsStr</span>) <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>to_path_buf</span>();
+        <span class='ident'>buf</span>.<span class='ident'>set_extension</span>(<span class='ident'>extension</span>);
+        <span class='ident'>buf</span>
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20with_file_name%3CS%3A%20AsRef%3COsStr%3E%3E(%26self%2C%20file_name%3A%20S)%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20self._with_file_name(file_name.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_with_self_name(%26self%2C%20file_name%3A%20%26OsStr)%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20buf%20%3D%20self.to_path_buf()%3B%0A%20%20%20%20%20%20%20%20buf.set_file_name(file_name)%3B%0A%20%20%20%20%20%20%20%20buf%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20with_extension%3CS%3A%20AsRef%3COsStr%3E%3E(%26self%2C%20extension%3A%20S)%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20self._with_extension(extension.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_with_extension(%26self%2C%20extension%3A%20%26OsStr)%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20buf%20%3D%20self.to_path_buf()%3B%0A%20%20%20%20%20%20%20%20buf.set_extension(extension)%3B%0A%20%20%20%20%20%20%20%20buf%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To create an iterator over the components of the path, viewing them as raw <code>OsStr</code> slices:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iter</span> {<span class='comment'>/*...*/</span>}
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20iter(%26self)%20-%3E%20Iter%20%7B%2F*...*%2F%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To return a safely displayable path (this method is necessary because a path may contain non-Unicode data):</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>display</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Display</span> {<span class='comment'>/*...*/</span>}
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20display(%26self)%20-%3E%20Display%20%7B%2F*...*%2F%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To interact with the file system:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>Path</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>metadata</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>fs</span>::<span class='ident'>Metadata</span><span class='op'>&gt;</span> {
+        <span class='ident'>fs</span>::<span class='ident'>metadata</span>(<span class='self'>self</span>)
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>symlink_metadata</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>fs</span>::<span class='ident'>Metadata</span><span class='op'>&gt;</span> {
+        <span class='ident'>fs</span>::<span class='ident'>symlink_metadata</span>(<span class='self'>self</span>)
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>canonicalize</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PathBuf</span><span class='op'>&gt;</span> {
+        <span class='ident'>fs</span>::<span class='ident'>canonicalize</span>(<span class='self'>self</span>)
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_link</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PathBuf</span><span class='op'>&gt;</span> {
+        <span class='ident'>fs</span>::<span class='ident'>read_link</span>(<span class='self'>self</span>)
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_dir</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>fs</span>::<span class='ident'>ReadDir</span><span class='op'>&gt;</span> {
+        <span class='ident'>fs</span>::<span class='ident'>read_dir</span>(<span class='self'>self</span>)
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>exists</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='ident'>fs</span>::<span class='ident'>metadata</span>(<span class='self'>self</span>).<span class='ident'>is_ok</span>()
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_file</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='ident'>fs</span>::<span class='ident'>metadata</span>(<span class='self'>self</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>m</span><span class='op'>|</span> <span class='ident'>m</span>.<span class='ident'>is_file</span>()).<span class='ident'>unwrap_or</span>(<span class='bool-val'>false</span>)
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_dir</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='ident'>fs</span>::<span class='ident'>metadata</span>(<span class='self'>self</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>m</span><span class='op'>|</span> <span class='ident'>m</span>.<span class='ident'>is_dir</span>()).<span class='ident'>unwrap_or</span>(<span class='bool-val'>false</span>)
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Path%20%7B%0A%20%20%20%20pub%20fn%20metadata(%26self)%20-%3E%20io%3A%3AResult%3Cfs%3A%3AMetadata%3E%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Ametadata(self)%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20symlink_metadata(%26self)%20-%3E%20io%3A%3AResult%3Cfs%3A%3AMetadata%3E%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Asymlink_metadata(self)%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20canonicalize(%26self)%20-%3E%20io%3A%3AResult%3CPathBuf%3E%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Acanonicalize(self)%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20read_link(%26self)%20-%3E%20io%3A%3AResult%3CPathBuf%3E%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Aread_link(self)%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20read_dir(%26self)%20-%3E%20io%3A%3AResult%3Cfs%3A%3AReadDir%3E%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Aread_dir(self)%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20exists(%26self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Ametadata(self).is_ok()%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20is_file(%26self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Ametadata(self).map(%7Cm%7C%20m.is_file()).unwrap_or(false)%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20is_dir(%26self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20fs%3A%3Ametadata(self).map(%7Cm%7C%20m.is_dir()).unwrap_or(false)%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>Finally, note that it implements <code>ToOwned&lt;Owned=PathBuf&gt;</code>, <code>AsRef&lt;OsStr&gt;</code>, <code>AsRef&lt;Path&gt;</code>, <code>Debug</code>, <code>PartialEq</code>, <code>Eq</code>, <code>PartialOrd</code>, <code>Ord</code>, <code>Hash</code>.</p>
+
+<h1 id='pathbuf' class='section-header'><a href='#pathbuf'>PathBuf</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PathBuf</span> {
+    <span class='ident'>inner</span>: <span class='ident'>OsString</span>,
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20struct%20PathBuf%20%7B%0A%20%20%20%20inner%3A%20OsString%2C%0A%7D%0A%7D">Run</a></pre>
+
+<p>Represents an owned mutable path.</p>
+
+<p>To create one:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>PathBuf</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>PathBuf</span> {
+        <span class='ident'>PathBuf</span> { <span class='ident'>inner</span>: <span class='ident'>OsString</span>::<span class='ident'>new</span>() }
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20PathBuf%20%7B%0A%20%20%20%20pub%20fn%20new()%20-%3E%20PathBuf%20%7B%0A%20%20%20%20%20%20%20%20PathBuf%20%7B%20inner%3A%20OsString%3A%3Anew()%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To coerce it to a <code>Path</code> slice:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>PathBuf</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>as_path</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Path</span> {
+        <span class='self'>self</span>
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20PathBuf%20%7B%0A%20%20%20%20pub%20fn%20as_path(%26self)%20-%3E%20%26Path%20%7B%0A%20%20%20%20%20%20%20%20self%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To push or pop component at the tail of the path:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>PathBuf</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>push</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>path</span>: <span class='ident'>P</span>) {
+        <span class='self'>self</span>.<span class='ident'>_push</span>(<span class='ident'>path</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_push</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>) {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>need_sep</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>as_mut_vec</span>().<span class='ident'>last</span>()
+            .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='op'>!</span><span class='ident'>is_sep_byte</span>(<span class='kw-2'>*</span><span class='ident'>c</span>)).<span class='ident'>unwrap_or</span>(<span class='bool-val'>false</span>);
+
+        {
+            <span class='comment'>// deal with the driver special case on Windows</span>
+            <span class='kw'>let</span> <span class='ident'>comps</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>components</span>)_;
+            <span class='kw'>if</span> <span class='ident'>comps</span>.<span class='ident'>prefix_len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>comps</span>.<span class='ident'>prefix_len</span>() <span class='op'>==</span> <span class='ident'>comps</span>.<span class='ident'>path</span>.<span class='ident'>len</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>comps</span>.<span class='ident'>prefix</span>.<span class='ident'>unwrap</span>().<span class='ident'>is_drive</span>() {
+                <span class='ident'>need_sep</span> <span class='op'>=</span> <span class='bool-val'>false</span>
+            }
+        }
+
+        <span class='kw'>if</span> <span class='ident'>path</span>.<span class='ident'>is_absolute</span>() <span class='op'>||</span> <span class='ident'>path</span>.<span class='ident'>prefix</span>().<span class='ident'>is_some</span>() {
+            <span class='self'>self</span>.<span class='ident'>as_mut_vec</span>().<span class='ident'>truncate</span>(<span class='number'>0</span>);
+        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>path</span>.<span class='ident'>has_root</span>() {
+            <span class='kw'>let</span> <span class='ident'>prefix_len</span>() <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>components</span>().<span class='ident'>prefix_remaining</span>();
+            <span class='self'>self</span>.<span class='ident'>as_mut_vec</span>().<span class='ident'>truncate</span>(<span class='ident'>prefix_len</span>);
+        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>need_sep</span> {
+            <span class='self'>self</span>.<span class='ident'>inner</span>.<span class='ident'>push</span>(<span class='ident'>MAIN_SEP_STR</span>);
+        }
+
+        <span class='self'>self</span>.<span class='ident'>inner</span>.<span class='ident'>push</span>(<span class='ident'>path</span>);
+    }
+
+
+    <span class='comment'>// return false and does nothing if `self.file_name() == None`</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>parent</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>p</span><span class='op'>|</span> <span class='ident'>p</span>.<span class='ident'>as_u8_slice</span>().<span class='ident'>len</span>()) {
+            <span class='prelude-val'>Some</span>(<span class='ident'>len</span>) <span class='op'>=&gt;</span> {
+                <span class='self'>self</span>.<span class='ident'>as_mut_vec</span>().<span class='ident'>truncate</span>(<span class='ident'>len</span>);
+                <span class='bool-val'>true</span>
+            }
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='bool-val'>false</span>,
+        }
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20PathBuf%20%7B%0A%20%20%20%20pub%20fn%20push%3CP%3A%20AsRef%3CPath%3E%3E(%26mut%20self%2C%20path%3A%20P)%20%7B%0A%20%20%20%20%20%20%20%20self._push(path.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_push(%26mut%20self%2C%20path%3A%20%26Path)%20%7B%0A%20%20%20%20%20%20%20%20let%20mut%20need_sep%20%3D%20self.as_mut_vec().last()%0A%20%20%20%20%20%20%20%20%20%20%20%20.map(%7Cc%7C%20!is_sep_byte(*c)).unwrap_or(false)%3B%0A%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20deal%20with%20the%20driver%20special%20case%20on%20Windows%0A%20%20%20%20%20%20%20%20%20%20%20%20let%20comps%20%3D%20self.components)_%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20comps.prefix_len()%20%3E%200%20%26%26%20comps.prefix_len()%20%3D%3D%20comps.path.len()%20%26%26%20comps.prefix.unwrap().is_drive()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20need_sep%20%3D%20false%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20if%20path.is_absolute()%20%7C%7C%20path.prefix().is_some()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20self.as_mut_vec().truncate(0)%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20path.has_root()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20let%20prefix_len()%20%3D%20self.components().prefix_remaining()%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20self.as_mut_vec().truncate(prefix_len)%3B%0A%20%20%20%20%20%20%20%20%7D%20else%20if%20need_sep%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20self.inner.push(MAIN_SEP_STR)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20self.inner.push(path)%3B%0A%20%20%20%20%7D%0A%0A%0A%20%20%20%20%2F%2F%20return%20false%20and%20does%20nothing%20if%20%60self.file_name()%20%3D%3D%20None%60%0A%20%20%20%20pub%20fn%20pop(%26mut%20self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20match%20self.parent().map(%7Cp%7C%20p.as_u8_slice().len())%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some(len)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20self.as_mut_vec().truncate(len)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20true%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20None%20%3D%3E%20false%2C%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>To update the tail component (i.e. the file name) or to update the extension:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>PathBuf</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_file_name</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>OsStr</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>file_name</span>: <span class='ident'>S</span>) {
+        <span class='self'>self</span>.<span class='ident'>_set_file_name</span>(<span class='ident'>file_name</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_set_file_name</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>file_name</span>: <span class='kw-2'>&amp;</span><span class='ident'>OsStr</span>) {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>file_name</span>().<span class='ident'>is_some</span>() {
+            <span class='kw'>let</span> <span class='ident'>popped</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pop</span>)_;
+            <span class='macro'>debug_assert</span><span class='macro'>!</span>(<span class='ident'>popped</span>);
+        }
+        <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>file_name</span>);
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_extension</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>OsStr</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>extension</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>_set_extension</span>(<span class='ident'>extension</span>.<span class='ident'>as_ref</span>())
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>_set_extension</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>extension</span>: <span class='kw-2'>&amp;</span><span class='ident'>OsStr</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>file_name</span>().<span class='ident'>is_none</span>() {
+            <span class='kw'>return</span> <span class='bool-val'>false</span>;
+        }
+
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>stem</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>file_stem</span>() {
+            <span class='prelude-val'>Some</span>(<span class='ident'>stem</span>) <span class='op'>=&gt;</span> <span class='ident'>stem</span>.<span class='ident'>to_os_string</span>(),
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='ident'>OsString</span>::<span class='ident'>new</span>(),
+        };
+
+        <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>os_str_as_u8_slice</span>(<span class='ident'>extension</span>).<span class='ident'>is_empty</span>() {
+            <span class='ident'>stem</span>.<span class='ident'>push</span>(<span class='string'>&quot;.&quot;</span>);
+            <span class='ident'>stem</span>.<span class='ident'>push</span>(<span class='ident'>extension</span>);
+        }
+        <span class='self'>self</span>.<span class='ident'>set_file_name</span>(<span class='kw-2'>&amp;</span><span class='ident'>stem</span>);
+
+        <span class='bool-val'>true</span>
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20PathBuf%20%7B%0A%20%20%20%20pub%20fn%20set_file_name%3CS%3A%20AsRef%3COsStr%3E%3E(%26mut%20self%2C%20file_name%3A%20S)%20%7B%0A%20%20%20%20%20%20%20%20self._set_file_name(file_name.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_set_file_name(%26mut%20self%2C%20file_name%3A%20%26OsStr)%20%7B%0A%20%20%20%20%20%20%20%20if%20self.file_name().is_some()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20let%20popped%20%3D%20self.pop)_%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20debug_assert!(popped)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20self.push(file_name)%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20set_extension%3CS%3A%20AsRef%3COsStr%3E%3E(%26mut%20self%2C%20extension%3A%20S)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20self._set_extension(extension.as_ref())%0A%20%20%20%20%7D%0A%0A%20%20%20%20fn%20_set_extension(%26mut%20self%2C%20extension%3A%20%26OsStr)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20if%20self.file_name().is_none()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20return%20false%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20let%20mut%20stem%20%3D%20match%20self.file_stem()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20Some(stem)%20%3D%3E%20stem.to_os_string()%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20None%20%3D%3E%20OsString%3A%3Anew()%2C%0A%20%20%20%20%20%20%20%20%7D%3B%0A%0A%20%20%20%20%20%20%20%20if%20!os_str_as_u8_slice(extension).is_empty()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20stem.push(%22.%22)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20stem.push(extension)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20self.set_file_name(%26stem)%3B%0A%0A%20%20%20%20%20%20%20%20true%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>TO transform the path buffer into an owned <code>OsString</code>:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>impl</span> <span class='ident'>PathBuf</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>into_os_string</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>OsString</span> {
+        <span class='self'>self</span>.<span class='ident'>inner</span>
+    }
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20PathBuf%20%7B%0A%20%20%20%20pub%20fn%20into_os_string(self)%20-%3E%20OsString%20%7B%0A%20%20%20%20%20%20%20%20self.inner%0A%20%20%20%20%7D%0A%7D%0A%7D">Run</a></pre>
+
+<p>Note that <code>Clone</code>, <code>From&lt;&amp;T&gt; where T: ?Sized + AsRef&lt;OsStr&gt;</code>,<code>From&lt;OsString&gt;</code>, <code>From&lt;String&gt;</code>, <code>FromIterator&lt;P&gt; where P: AsRef&lt;Path&gt;</code>, <code>Extend&lt;P&gt; where P: AsRef&lt;Path&gt;</code>, <code>Debug</code>, <code>Deref&lt;Target=Path&gt;</code>, <code>Borrow&lt;Path&gt;</code>, <code>PartialEq</code>, <code>Eq</code>, <code>PartialOrd</code>, <code>Ord</code>, <code>Hash</code>, <code>AsRef&lt;OsStr&gt;</code>, <code>AsRef&lt;Path&gt;</code> are implemented for <code>PathBuf</code>.</p>
+
+<p>Finally, the module provides a method to determine whether a character is one of the permitted path separators for the current platform:</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_separator</span>(<span class='ident'>c</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {<span class='comment'>/*...*/</span>}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20fn%20is_separator(c%3A%20char)%20-%3E%20bool%20%7B%2F*...*%2F%7D%0A%7D">Run</a></pre>
+
+    <script src='rustbook.js'></script>
+</div></div>
+
+
+</body>
+</html>

@@ -81,6 +81,18 @@
 </li>
 <li><a class='active' href='ops-readme.html'><b>3.23.</b> std::ops</a>
 </li>
+<li><a  href='option-readme.html'><b>3.24.</b> std::option</a>
+</li>
+<li><a  href='os-readme.html'><b>3.25.</b> std::os</a>
+</li>
+<li><a  href='panic-readme.html'><b>3.26.</b> std::panic</a>
+</li>
+<li><a  href='path-readme.html'><b>3.27.</b> std::path</a>
+</li>
+<li><a  href='prelude-readme.html'><b>3.28.</b> std::prelude</a>
+</li>
+<li><a  href='process-readme.html'><b>3.29.</b> std::process</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -90,9 +102,9 @@
 
 
     <h1 class="title">std::ops</h1>
-    <p>This module contains traits that allows the user to overload certain operators.</p>
+    <p>This module contains traits that allow the user to overload certain operators.</p>
 
-<p>The first set of traits deals with numerical operators, including <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, and bitwise operators <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code> and <code>&gt;&gt;</code>:</p>
+<p>The first set of traits deals with numerical operators, including <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, and bitwise operators <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code>:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Add</span><span class='op'>&lt;</span><span class='ident'>RHS</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> {
@@ -147,6 +159,8 @@
 
 <p>Note that these traits consumes both parameters by value.</p>
 
+<hr>
+
 <p>Next comes a set of traits dealing with assigning-operators, including <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>, <code>&amp;=</code>, <code>|=</code> and <code>^=</code>:</p>
 
 <pre class='rust rust-example-rendered'>
@@ -189,6 +203,8 @@
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ShrAssign</span><span class='op'>&lt;</span><span class='ident'>Rhs</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>shr_assign</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>Rhs</span>);
 }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20AddAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20add_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20SubAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20sub_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20MulAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20mul_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20DivAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20div_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20RemAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20rem_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20BitAndAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20bitand_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20BitOrAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20bitor_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20BitXorAssign%3CRhs%20%3D%20Self%3E%20%7B%0A%20%20%20%20fn%20bitxor_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20ShlAssign%3CRhs%3E%20%7B%0A%20%20%20%20fn%20shl_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%0Apub%20trait%20ShrAssign%3CRhs%3E%20%7B%0A%20%20%20%20fn%20shr_assign(%26mut%20self%2C%20Rhs)%3B%0A%7D%0A%7D">Run</a></pre>
+
+<hr>
 
 <p>Additionally, some unary-operators can also be overloaded, including: <code>-</code>, <code>!</code>, <code>*</code>:</p>
 
@@ -234,9 +250,6 @@
 <p>Then</p>
 
 <pre class='rust rust-example-rendered'>
-
-
-
 <span class='kw'>let</span> <span class='ident'>foo</span> <span class='op'>=</span> <span class='ident'>Foo</span> { <span class='ident'>u</span>: <span class='number'>2</span>, <span class='ident'>v</span>: <span class='number'>3</span> };
 <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='kw-2'>*</span><span class='ident'>foo</span>; <span class='comment'>// let x: i32 = foo.u</span>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>x</span>, <span class='number'>2</span>);<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Ause%20std%3A%3Aops%3A%3ADeref%3B%0A%0Astruct%20Foo%20%7B%0A%20%20%20u%3A%20i32%2C%0A%20%20%20v%3A%20i32%2C%0A%7D%0A%0Aimpl%20Deref%20for%20Foo%20%7B%0A%20%20%20%20type%20Target%20%3D%20i32%3B%0A%0A%20%20%20%20fn%20deref(%26self)%20-%3E%20%26i32%20%7B%0A%20%20%20%20%20%20%20%20%26self.u%0A%20%20%20%20%7D%0A%7D%0A%0Alet%20foo%20%3D%20Foo%20%7B%20u%3A%202%2C%20v%3A%203%20%7D%3B%0Alet%20x%20%3D%20*foo%3B%20%2F%2F%20let%20x%3A%20i32%20%3D%20foo.u%0Aassert_eq!(x%2C%202)%3B%0A%7D">Run</a></pre>
@@ -248,14 +261,12 @@
     <span class='kw'>fn</span> <span class='ident'>deref_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>Self</span>::<span class='ident'>Target</span>;
 }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20DerefMut%3A%20Deref%20%7B%0A%20%20%20%20fn%20deref_mut(%26mut%20self)%20-%3E%20%26mut%20Self%3A%3ATarget%3B%0A%7D%0A%7D">Run</a></pre>
 
-<p>Note <code>DerefMut</code> was built on top of <code>Deref</code>. This ensures that the underlying type returned by different context stays consistent.</p>
+<p>Note that <code>DerefMut</code> was built on top of <code>Deref</code>. This ensures that the underlying type returned by different context stays consistent.</p>
 
 <p>Continuing with our example above, we implement <code>DerefMut</code> for <code>Foo</code> as well:</p>
 
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>DerefMut</span>;
-
-
 
 <span class='kw'>impl</span> <span class='ident'>DerefMut</span> <span class='kw'>for</span> <span class='ident'>Foo</span> {
     <span class='kw'>fn</span> <span class='ident'>deref_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>i32</span> {
@@ -270,6 +281,8 @@
 
 <p>In our example, we implement the two traits such that they actually return references to <em>different</em> places. This is merely a demonstration of the ability that we <em>can</em>, but in practice I don&#39;t see any reason that we <em>should</em>, as this may cause confusion to the user.</p>
 
+<hr>
+
 <p>Additionally, the module contains two traits for indexing operator <code>[]</code>. Like <code>*</code>, depending on the context, one of the two trait methods would be chosen.</p>
 
 <pre class='rust rust-example-rendered'>
@@ -282,7 +295,11 @@
     <span class='kw'>fn</span> <span class='ident'>index_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>Idx</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>Self</span>::<span class='ident'>Output</span>;
 }<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20trait%20Index%3CIdx%3A%20%3FSized%3E%20%7B%0A%20%20%20%20type%20Output%3A%20%3FSized%3B%0A%20%20%20%20fn%20index(%26self%2C%20index%3A%20Idx)%20-%3E%20%26Self%3A%3AOutput%3B%0A%7D%0A%0Apub%20trait%20IndexMut%3CIdx%3A%20%3FSized%3E%3A%20Index%3CIdx%3E%20%7B%0A%20%20%20%20fn%20index_mut(%26mut%20self%2C%20index%3A%20Idx)%20-%3E%20%26mut%20Self%3A%3AOutput%3B%0A%7D%0A%7D">Run</a></pre>
 
+<hr>
+
 <p>Additionally, the module contains traits for operator<code>()</code>: <code>FnOnce</code>, <code>FnMut</code> and <code>Fn</code>. As the time of writing these three traits act more like a marker. Their usage and implementation are feature-gated, thus we might not discuss them here.</p>
+
+<hr>
 
 <p>Finally, the module contains the special trait <code>Drop</code>. This trait doesn&#39;t have any operator associated. Its associated method would get invoked when the value goes out of scope.</p>
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <title>std::num</title>
+    <title>std::os</title>
 
     <link rel="stylesheet" type="text/css" href="rustbook.css">
 
@@ -77,13 +77,13 @@
 </li>
 <li><a  href='net-readme.html'><b>3.21.</b> std::net</a>
 </li>
-<li><a class='active' href='num-readme.html'><b>3.22.</b> std::num</a>
+<li><a  href='num-readme.html'><b>3.22.</b> std::num</a>
 </li>
 <li><a  href='ops-readme.html'><b>3.23.</b> std::ops</a>
 </li>
 <li><a  href='option-readme.html'><b>3.24.</b> std::option</a>
 </li>
-<li><a  href='os-readme.html'><b>3.25.</b> std::os</a>
+<li><a class='active' href='os-readme.html'><b>3.25.</b> std::os</a>
 </li>
 <li><a  href='panic-readme.html'><b>3.26.</b> std::panic</a>
 </li>
@@ -101,28 +101,8 @@
 <div id='page'>
 
 
-    <h1 class="title">std::num</h1>
-    <p>This module contains structs and enums that provide additional numerical functionalities.</p>
-
-<p>It mainly provides:</p>
-
-<pre class='rust rust-example-rendered'>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Wrappng</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='kw'>pub</span> <span class='ident'>T</span>);<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20struct%20Wrappng%3CT%3E(pub%20T)%3B%0A%7D">Run</a></pre>
-
-<p>A wrapper type around numerical value types, such that standard arithmetic operations on the underlying value have wrapping semantics.</p>
-
-<hr>
-
-<pre class='rust rust-example-rendered'>
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>FpCategory</span> {
-    <span class='ident'>Nan</span>, <span class='comment'>// Not a number</span>
-    <span class='ident'>Infinite</span>, <span class='comment'>// positive or negative infinity</span>
-    <span class='ident'>Zero</span>, <span class='comment'>// positive or negative zero</span>
-    <span class='ident'>Subnormal</span>, <span class='comment'>// de-normalized floating point representations</span>
-    <span class='ident'>Normal</span>, <span class='comment'>// a regular floating point number</span>
-}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Apub%20enum%20FpCategory%20%7B%0A%20%20%20%20Nan%2C%20%2F%2F%20Not%20a%20number%0A%20%20%20%20Infinite%2C%20%2F%2F%20positive%20or%20negative%20infinity%0A%20%20%20%20Zero%2C%20%2F%2F%20positive%20or%20negative%20zero%0A%20%20%20%20Subnormal%2C%20%2F%2F%20de-normalized%20floating%20point%20representations%0A%20%20%20%20Normal%2C%20%2F%2F%20a%20regular%20floating%20point%20number%0A%7D%0A%7D">Run</a></pre>
-
-<p>A classification of floating point values, used as the return type for <code>f32::classify()</code> and <code>f6::classify()</code>.</p>
+    <h1 class="title">std::os</h1>
+    <p>Contains OS specific functionality extensions.</p>
 
     <script src='rustbook.js'></script>
 </div></div>

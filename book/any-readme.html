@@ -81,6 +81,18 @@
 </li>
 <li><a  href='ops-readme.html'><b>3.23.</b> std::ops</a>
 </li>
+<li><a  href='option-readme.html'><b>3.24.</b> std::option</a>
+</li>
+<li><a  href='os-readme.html'><b>3.25.</b> std::os</a>
+</li>
+<li><a  href='panic-readme.html'><b>3.26.</b> std::panic</a>
+</li>
+<li><a  href='path-readme.html'><b>3.27.</b> std::path</a>
+</li>
+<li><a  href='prelude-readme.html'><b>3.28.</b> std::prelude</a>
+</li>
+<li><a  href='process-readme.html'><b>3.29.</b> std::process</a>
+</li>
 </ol>
 </li>
 </ol>
@@ -159,7 +171,7 @@
         <span class='ident'>t</span> <span class='op'>==</span> <span class='ident'>boxed</span>
     }
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast_ref</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>AnyM</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast_ref</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Any</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>() {
             <span class='kw'>unsafe</span> {
                 <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>*</span>(<span class='self'>self</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>Any</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>T</span>))
@@ -182,7 +194,7 @@
 
 <span class='kw'>impl</span> <span class='ident'>Any</span><span class='op'>+</span><span class='ident'>Send</span> {
     <span class='comment'>// Same as above..</span>
-}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Any%20%7B%0A%20%20%20%20pub%20fn%20is%20%3CT%3A%20Any%3E(%26self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20let%20t%20%3D%20TypeId%3A%3Aof%3A%3A%3CT%3E()%3B%0A%0A%20%20%20%20%20%20%20%20let%20boxed%20%3D%20self.get_type_id()%3B%0A%0A%20%20%20%20%20%20%20%20t%20%3D%3D%20boxed%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20downcast_ref%3CT%3A%20AnyM(%26self)%20-%3E%20Option%3C%26T%3E%20%7B%0A%20%20%20%20%20%20%20%20if%20self.is%3A%3A%3CT%3E()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20unsafe%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Some(%26*(self%20as%20*const%20Any%20as%20*const%20T))%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20None%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20downcast_mut%3CT%3A%20Any%3E(%26mut%20self)%20-%3E%20Option%3C%26mut%20T%3E%20%7B%0A%20%20%20%20%20%20%20%20if%20self.is%3A%3A%3CT%3E()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20unsafe%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Some(%26mut%20*(self%20as%20*mut%20Any%20as%20*mut%20T))%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20None%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%0Aimpl%20Any%2BSend%20%7B%0A%20%20%20%20%2F%2F%20Same%20as%20above..%0A%7D%0A%7D">Run</a></pre>
+}<a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=fn%20main()%20%7B%0Aimpl%20Any%20%7B%0A%20%20%20%20pub%20fn%20is%20%3CT%3A%20Any%3E(%26self)%20-%3E%20bool%20%7B%0A%20%20%20%20%20%20%20%20let%20t%20%3D%20TypeId%3A%3Aof%3A%3A%3CT%3E()%3B%0A%0A%20%20%20%20%20%20%20%20let%20boxed%20%3D%20self.get_type_id()%3B%0A%0A%20%20%20%20%20%20%20%20t%20%3D%3D%20boxed%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20downcast_ref%3CT%3A%20Any%3E(%26self)%20-%3E%20Option%3C%26T%3E%20%7B%0A%20%20%20%20%20%20%20%20if%20self.is%3A%3A%3CT%3E()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20unsafe%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Some(%26*(self%20as%20*const%20Any%20as%20*const%20T))%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20None%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20pub%20fn%20downcast_mut%3CT%3A%20Any%3E(%26mut%20self)%20-%3E%20Option%3C%26mut%20T%3E%20%7B%0A%20%20%20%20%20%20%20%20if%20self.is%3A%3A%3CT%3E()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20unsafe%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Some(%26mut%20*(self%20as%20*mut%20Any%20as%20*mut%20T))%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20None%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D%0A%0Aimpl%20Any%2BSend%20%7B%0A%20%20%20%20%2F%2F%20Same%20as%20above..%0A%7D%0A%7D">Run</a></pre>
 
 <p>The general use case is demonstrated as follow:</p>
 
