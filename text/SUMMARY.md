@@ -31,3 +31,5 @@
     * [std::path](path-readme.md)
     * [std::prelude](prelude-readme.md)
     * [std::process](process-readme.md)
+    * [std::ptr](ptr-readme.md)
+    

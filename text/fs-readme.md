@@ -135,9 +135,9 @@ Next, to set permissions on the entry:
 pub fn set_permissions<P>(path: P, perm: Permissions) -> Result<()> where P: AsRef<Path>
 ```
 
-This function would faile if `path` doesn't exist or the user lacks permissions to change the file.
+This function would fail if `path` doesn't exist or the user lacks permissions to change the file.
 
-Lastly, there is a function to canonicalize a path, the reuturned path will have all its intermediate components normlized, and symbolic links resolved:
+Lastly, there is a function to canonicalize a path, the returned path will have all its intermediate components normalized, and symbolic links resolved:
 
 ```ignore
 pub fn canonicalize<P>(path: P) -> Result<PathBuf> where P: AsRef<Path>
@@ -219,7 +219,7 @@ The struct is a builder for directory creation. For me it has little usage, chec
 
 ## OpenOptions
 
-The struct is a builder for file opening. It contains options to configure how a file should opend.
+The struct is a builder for file opening. It contains options to configure how a file should be opend.
 
 Firstly, to create a new set of options:
 
@@ -315,7 +315,7 @@ impl File {
 }
 ```
 
-The returned handle would be an independent handle, with all the states identicle to the current one.
+The returned handle would be an independent handle, with all the states identical to the current one.
 
 The underlying file resides on a disk or some other external devices. As such, synchronization should be done between the handle and the underlying file on the disk. For this we have:
 
@@ -347,8 +347,8 @@ impl File {
 
 which will try to change the permissions set on the file atomically.
 
-[^unstable]: As of 1.15 the function is marked as unstable. However, according to the associated tracking issue, it would be stablized with the release of 1.16.
+[^unstable]: As of 1.15 the function is marked as unstable. However, according to the associated tracking issue, it would be stabilized with the release of 1.16.
 
 To actually read or write to the file, `std::io::Read` and `std::io::Write` as well as `std::io::Seek` is implemented.
 
-*Note*: The above three traits, `Read`, `Write` and `Seek` are also implemented for `&'a File`. Why bother? Because `Read`ing or `Writing` or `Seek`ing all requires a mutable reference (as they logically should). However, libstd decides that the mutability of a `File`, which is simply just a wrapper for some os handle, is irrelavant to the mutability of its pointed file's content. The handle's immutability only means that its pointing behavior won't change, nothing more. As reading/writing/seeking here deals with the pointed file's content rather than the file handle itself, it should also be usable through an immutable reference of the handle. As such, we have things like `impl<'a> Read for &'a File`. This pattern is fairly common in the standard library.
+*Note*: The above three traits, `Read`, `Write` and `Seek` are also implemented for `&'a File`. Why bother? Because `Read`ing or `Writing` or `Seek`ing all requires a mutable reference (as they logically should). However, libstd decides that the mutability of a `File`, which is simply just a wrapper for some os handle, is irrelevant to the mutability of its pointed file's content. The handle's immutability only means that its pointing behavior won't change, nothing more. As reading/writing/seeking here deals with the pointed file's content rather than the file handle itself, it should also be usable through an immutable reference of the handle. As such, we have things like `impl<'a> Read for &'a File`. This pattern is fairly common in the standard library.
