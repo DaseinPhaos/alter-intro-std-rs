@@ -32,4 +32,4 @@
     * [std::prelude](prelude-readme.md)
     * [std::process](process-readme.md)
     * [std::ptr](ptr-readme.md)
-    
+    * [std::rc](rc-readme.md)
