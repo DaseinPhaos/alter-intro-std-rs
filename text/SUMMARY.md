@@ -34,3 +34,4 @@
     * [std::ptr](ptr-readme.md)
     * [std::rc](rc-readme.md)
     * [std::result](result-readme.md)
+    * [std::time](time-readme.md)
