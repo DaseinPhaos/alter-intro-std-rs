@@ -35,3 +35,4 @@
     * [std::rc](rc-readme.md)
     * [std::result](result-readme.md)
     * [std::time](time-readme.md)
+    * [std::vec](vec-readme.md)

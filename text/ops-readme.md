@@ -219,7 +219,7 @@ In our example, we implement the two traits such that they actually return refer
 
 ---
 
-Additionally, the module contains two traits for indexing operator `[]`. Like `*`, depending on the context, one of the two trait methods would be chosen.
+Additionally, the module contains two traits for indexing operator `[]`. `foo[idx]` is a syntactic sugar for `*foo.index(idx)`. Like `*`, depending on the context, one of the two trait methods would be chosen.
 
 ```ignore
 pub trait Index<Idx: ?Sized> {
@@ -231,6 +231,31 @@ pub trait IndexMut<Idx: ?Sized>: Index<Idx> {
     fn index_mut(&mut self, index: Idx) -> &mut Self::Output;
 }
 ```
+
+To cooperate with the index operations a set of structs representing ranges are defined, including:
+
+```ignore
+/// A half open range, constructed with syntactic sugar `start..end`.
+pub struct Range<Idx> {
+    pub start: Idx,
+    pub end: Idx,
+}
+
+/// A range with lower bound, constructed with syntactic sugar `start..`
+pub struct RangeFrom<Idx> {
+    pub start: Idx,
+}
+
+/// A range with upper bound, constructed with syntactic sugar `..end`
+pub struct RangeTo<Idx> {
+    pub end: Idx,
+}
+
+/// A range without bound, constructed with syntactic sugar `..`:
+pub struct RangeFull;
+```
+
+Check to document for further details about these ranges.
 
 ---
 
