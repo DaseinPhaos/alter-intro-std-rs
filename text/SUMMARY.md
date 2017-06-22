@@ -36,3 +36,4 @@
     * [std::result](result-readme.md)
     * [std::time](time-readme.md)
     * [std::vec](vec-readme.md)
+    * [std::sync](sync-readme.md)
