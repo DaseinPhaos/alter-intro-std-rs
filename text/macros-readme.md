@@ -86,13 +86,42 @@ Assertions are runtime checks that once failed would `panic` the calling thread.
 > - Enforce runtime invariants (esp. for unsafe code).
 > - [testing](https://doc.rust-lang.org/book/testing.html)
 
->[`assert_eq!`](https://doc.rust-lang.org/std/macro.assert_eq.html)
+> [`assert_eq!`](https://doc.rust-lang.org/std/macro.assert_eq.html)
 >
->Similar to `assert!($left_expr != $right_expr)`.
+> Similar to `assert!($left_expr == $right_expr)`. , but the debug info it prints out upon failure might be more helpful than that of the preceding `assert!`.
 
->[`assert_ne!`](https://doc.rust-lang.org/std/macro.assert_ne.html)
+## Example
+
+```rust
+let x = 1;
+let y = 0;
+assert!(x==y);
+```
+
+would print
+
+```text
+thread 'main' panicked at 'assertion failed: x == y', src/main.rs
+```
+
+, which ain't of much help, while
+
+```rust
+let x = 1;
+let y = 0;
+assert_eq!(x, y);
+```
+
+would print the evaluated value of comparison:
+
+```text
+thread 'main' panicked at 'assertion failed: `(left == right)` (left: `1`, right: `0`)', src/main.rs
+```
+
+
+> [`assert_ne!`](https://doc.rust-lang.org/std/macro.assert_ne.html)
 >
->Similar to `assert!($left_expr == $right_expr)`.
+> Similar to `assert!($left_expr != $right_expr)`, but the debug info it prints out upon failure might be more helpful than that of the preceding `assert!`. See example of `assert_eq!`.
 
 > [`debug_assert!`](https://doc.rust-lang.org/std/macro.concat.html)
 >
